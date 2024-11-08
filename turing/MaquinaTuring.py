@@ -16,6 +16,8 @@ class MaquinaTuring:
 
         while True:
             # Se obtiene el símbolo actual en la cinta
+            #print("valor posicion cabeza: " + str(self.posicion_cabeza))
+            #print("size cinta: " + str(len(self.cinta)))
             simbolo_actual = self.cinta[self.posicion_cabeza]
 
             # Verificamos si hay una transición disponible para el estado actual y el símbolo leído
@@ -29,8 +31,17 @@ class MaquinaTuring:
                 # Mover el cabezal
                 if transicion['movimiento'] == 'R':
                     self.posicion_cabeza += 1
+                    if self.posicion_cabeza == len(self.cinta):
+                        self.cinta.append('▲')
+
                 elif transicion['movimiento'] == 'L':
                     self.posicion_cabeza -= 1
+                    
+                    if self.posicion_cabeza < 0:
+                        self.cinta.appendleft('▲')
+                        self.posicion_cabeza += 1
+
+
 
                 #print(self.posicion_cabeza)
 
@@ -60,8 +71,8 @@ class MaquinaTuring:
         # Unimos la lista en una cadena y la imprimimos
         print(''.join(cinta_con_cabeza))
 
-    def moverDerecha(self):
-        self.posicion_cabeza += 1
+    #def moverDerecha(self):
+    #    self.posicion_cabeza += 1
 
-    def moverIzquierda(self):
-        self.posicion_cabeza -= 1
+    #def moverIzquierda(self):
+    #    self.posicion_cabeza -= 1
