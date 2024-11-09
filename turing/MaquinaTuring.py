@@ -8,7 +8,7 @@ class MaquinaTuring:
         self.transiciones = transiciones
         self.estado_actual = '8' # HARDCODED. Pero siempre deberia ser el estado 1 por convencion
         self.cinta = cinta
-        self.posicion_cabeza = 0
+        self.posicion_cabeza = 2 # HARDCODED
 
     def iniciar(self):
 
