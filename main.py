@@ -11,8 +11,8 @@ def cargar_cinta_desde_archivo(archivo):
         cinta = deque(contenido)
     return cinta
 
-estados = leer_archivo_estados("estados_automata.csv")
-transiciones = leer_archivo_transiciones("transiciones_automata.csv")
+estados = leer_archivo_estados("estados_automata_decremento_binario.csv")
+transiciones = leer_archivo_transiciones("decremento_binario.csv")
 estados_aceptadores = encontrar_estados_aceptadores(estados)
 
 archivo = "cinta.txt"
@@ -20,10 +20,5 @@ cinta = cargar_cinta_desde_archivo(archivo)
 
 # Inicializo la maquina de Turing
 mt = MaquinaTuring(estados, estados_aceptadores, transiciones, cinta)
-
-#print(mt.estados)
-#print(mt.estados_aceptadores)
-#print(mt.transiciones)
-#mt.imprimirCinta()
 
 mt.iniciar()

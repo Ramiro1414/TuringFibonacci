@@ -41,19 +41,15 @@ class MaquinaTuring:
                         self.cinta.appendleft('▲')
                         self.posicion_cabeza += 1
 
-
-
-                #print(self.posicion_cabeza)
-
                 # Cambiar al estado destino
                 self.estado_actual = transicion['destino']
 
                 # Verificar si estamos en un estado aceptador
                 if self.estado_actual in self.estados_aceptadores:
+                    self.imprimirCinta()
                     print(f"Autómata ha aceptado en el estado {self.estado_actual}.")
                     break
 
-                # Imprimir la cinta después de la operación
                 self.imprimirCinta()
             else:
                 # Si no hay transiciones, el autómata se detiene
@@ -70,9 +66,3 @@ class MaquinaTuring:
                 cinta_con_cabeza.append(str(valor))
         # Unimos la lista en una cadena y la imprimimos
         print(''.join(cinta_con_cabeza))
-
-    #def moverDerecha(self):
-    #    self.posicion_cabeza += 1
-
-    #def moverIzquierda(self):
-    #    self.posicion_cabeza -= 1
