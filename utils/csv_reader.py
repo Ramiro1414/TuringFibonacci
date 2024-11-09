@@ -3,31 +3,41 @@
 import csv
 
 def leer_archivo_transiciones(csv_filename: str):
-    """
-    Lee un archivo .csv delimitado con ';'.
-    * La primer columna contiene el estado de origin del automata.
-    * La segunda columna contiene el valor que se lee de la cinta.
-    * La tercera columna contiene el valor que se escribe en la cinta.
-    * La cuarta columna contiene el movimiento que se realiza en la cinta (R derecha o L izquierda).
-    * La quinta columna contiene el estado de destino del automata.
-    """
     transiciones = {}
+    configuracion = {}
+
     with open(csv_filename, 'r') as archivo_csv:
         lector_csv = csv.reader(archivo_csv, delimiter=';')
-        for fila in lector_csv:
-            estado_origen = (fila[0])
-            valor_leido = fila[1]
-            valor_escribir = fila[2]
-            movimiento = fila[3]
-            estado_destino = fila[4]
 
-            # Añadimos la transición al diccionario
-            transiciones[(estado_origen, valor_leido)] = {
-                'escribir': valor_escribir,
-                'movimiento': movimiento,
-                'destino': estado_destino
-            }
-    return transiciones
+        for fila in lector_csv:
+            if not fila:
+                continue  # Ignorar líneas en blanco
+            if fila[0].startswith('#'):
+                continue  # Ignorar comentarios
+
+            # Leer configuración antes de las transiciones
+            if fila[0] == "estado_inicial":
+                configuracion['estado_inicial'] = fila[1]
+            elif fila[0] == "posicion_cabeza":
+                configuracion['posicion_cabeza'] = int(fila[1])
+            elif fila[0] == "archivo_estados":
+                configuracion['archivo_estados'] = fila[1]
+            else:
+                # Si no es configuración, es una transición
+                estado_origen = fila[0]
+                valor_leido = fila[1]
+                valor_escribir = fila[2]
+                movimiento = fila[3]
+                estado_destino = fila[4]
+
+                # Añadir la transición al diccionario
+                transiciones[(estado_origen, valor_leido)] = {
+                    'escribir': valor_escribir,
+                    'movimiento': movimiento,
+                    'destino': estado_destino
+                }
+
+    return configuracion, transiciones
 
 def leer_archivo_estados(csv_filename: str):
     """

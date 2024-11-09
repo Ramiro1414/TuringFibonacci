@@ -1,3 +1,9 @@
+# Configuración de la máquina de Turing
+estado_inicial;1
+posicion_cabeza;2
+archivo_estados;estados_automata_decremento_binario.csv
+
+# Transiciones
 1;▲;▲;R;2
 2;0;0;R;2
 2;1;1;R;2

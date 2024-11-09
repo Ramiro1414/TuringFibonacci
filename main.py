@@ -11,14 +11,20 @@ def cargar_cinta_desde_archivo(archivo):
         cinta = deque(contenido)
     return cinta
 
-estados = leer_archivo_estados("estados_automata_suma_binaria.csv")
-transiciones = leer_archivo_transiciones("suma_binaria.csv")
+configuracion, transiciones = leer_archivo_transiciones("suma_binaria.csv")
+estados = leer_archivo_estados(configuracion['archivo_estados'])
 estados_aceptadores = encontrar_estados_aceptadores(estados)
 
-archivo = "cinta.txt"
-cinta = cargar_cinta_desde_archivo(archivo)
+cinta = cargar_cinta_desde_archivo("cinta.txt")
 
-# Inicializo la maquina de Turing
-mt = MaquinaTuring(estados, estados_aceptadores, transiciones, cinta)
+# Inicializo la máquina de Turing usando la configuración del CSV
+mt = MaquinaTuring(
+    estados=estados,
+    estados_aceptadores=estados_aceptadores,
+    transiciones=transiciones,
+    cinta=cinta,
+    estado_inicial=configuracion['estado_inicial'],
+    posicion_cabeza=configuracion['posicion_cabeza']
+)
 
 mt.iniciar()

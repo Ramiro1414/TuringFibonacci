@@ -1,68 +1,60 @@
 from collections import deque
 
 class MaquinaTuring:
-    def __init__(self, estados: dict, estados_aceptadores: list, transiciones: dict, cinta: deque):
-        self.cinta = deque()
+    def __init__(self, estados: dict, estados_aceptadores: list, transiciones: dict, cinta: deque, estado_inicial: str, posicion_cabeza: int):
         self.estados = estados
         self.estados_aceptadores = estados_aceptadores
         self.transiciones = transiciones
-        self.estado_actual = '8' # HARDCODED. Pero siempre deberia ser el estado 1 por convencion
+        self.estado_actual = estado_inicial
         self.cinta = cinta
-        self.posicion_cabeza = 2 # HARDCODED
+        self.posicion_cabeza = posicion_cabeza
 
     def iniciar(self):
-
-        self.imprimirCinta()
+        """Ejecuta el autómata, realizando transiciones hasta llegar a un estado aceptador o un estado de error."""
+        self.imprimir_cinta()
 
         while True:
-            # Se obtiene el símbolo actual en la cinta
-            #print("valor posicion cabeza: " + str(self.posicion_cabeza))
-            #print("size cinta: " + str(len(self.cinta)))
             simbolo_actual = self.cinta[self.posicion_cabeza]
 
-            # Verificamos si hay una transición disponible para el estado actual y el símbolo leído
             if (self.estado_actual, simbolo_actual) in self.transiciones:
-                # Obtenemos las acciones de la transición
-                transicion = self.transiciones[(self.estado_actual, simbolo_actual)]
-                
-                # Escribir el nuevo símbolo en la cinta
-                self.cinta[self.posicion_cabeza] = transicion['escribir']
-                
-                # Mover el cabezal
-                if transicion['movimiento'] == 'R':
-                    self.posicion_cabeza += 1
-                    if self.posicion_cabeza == len(self.cinta) or self.posicion_cabeza == len(self.cinta)-1:
-                        self.cinta.append('▲')
-
-                elif transicion['movimiento'] == 'L':
-                    self.posicion_cabeza -= 1
-                    
-                    if self.posicion_cabeza < 0:
-                        self.cinta.appendleft('▲')
-                        self.posicion_cabeza += 1
-
-                # Cambiar al estado destino
-                self.estado_actual = transicion['destino']
-
-                # Verificar si estamos en un estado aceptador
+                self.realizar_transicion(simbolo_actual)
                 if self.estado_actual in self.estados_aceptadores:
-                    print(f"Autómata ha aceptado en el estado {self.estado_actual}.")
-                    self.imprimirCinta()
+                    print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
+                    self.imprimir_cinta()
                     break
-
-                self.imprimirCinta()
+                self.imprimir_cinta()
             else:
-                # Si no hay transiciones, el autómata se detiene
                 print("Estado de error")
                 break
-    
-    def imprimirCinta(self):
-        # Usamos la posición de la cabeza para agregar los corchetes
-        cinta_con_cabeza = []
-        for i, valor in enumerate(self.cinta):
-            if i == self.posicion_cabeza:
-                cinta_con_cabeza.append(f"[{valor}]")  # Añadir corchetes alrededor del valor
+
+    def realizar_transicion(self, simbolo_actual):
+        """Ejecuta la transición basada en el símbolo actual y el estado."""
+        transicion = self.transiciones[(self.estado_actual, simbolo_actual)]
+        
+        self.escribir_en_cinta(transicion['escribir'])
+        self.mover_cabezal(transicion['movimiento'])
+        self.estado_actual = transicion['destino']
+
+    def escribir_en_cinta(self, simbolo):
+        """Escribe un símbolo en la posición actual de la cinta."""
+        self.cinta[self.posicion_cabeza] = simbolo
+
+    def mover_cabezal(self, direccion):
+        """Mueve el cabezal a la izquierda (L) o a la derecha (R) según la dirección especificada."""
+        if direccion == 'R':
+            self.posicion_cabeza += 1
+            if self.posicion_cabeza == len(self.cinta):
+                self.cinta.append('▲')
+        elif direccion == 'L':
+            if self.posicion_cabeza == 0:
+                self.cinta.appendleft('▲')
             else:
-                cinta_con_cabeza.append(str(valor))
-        # Unimos la lista en una cadena y la imprimimos
+                self.posicion_cabeza -= 1
+
+    def imprimir_cinta(self):
+        """Imprime la cinta, resaltando la posición del cabezal actual."""
+        cinta_con_cabeza = [
+            f"[{valor}]" if i == self.posicion_cabeza else str(valor)
+            for i, valor in enumerate(self.cinta)
+        ]
         print(''.join(cinta_con_cabeza))
