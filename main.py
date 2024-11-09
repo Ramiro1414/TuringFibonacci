@@ -11,8 +11,8 @@ def cargar_cinta_desde_archivo(archivo):
         cinta = deque(contenido)
     return cinta
 
-estados = leer_archivo_estados("estados_automata_decremento_binario.csv")
-transiciones = leer_archivo_transiciones("decremento_binario.csv")
+estados = leer_archivo_estados("estados_automata_suma_binaria.csv")
+transiciones = leer_archivo_transiciones("suma_binaria.csv")
 estados_aceptadores = encontrar_estados_aceptadores(estados)
 
 archivo = "cinta.txt"

@@ -6,7 +6,7 @@ class MaquinaTuring:
         self.estados = estados
         self.estados_aceptadores = estados_aceptadores
         self.transiciones = transiciones
-        self.estado_actual = '1' # HARDCODED. Pero siempre deberia ser el estado 1 por convencion
+        self.estado_actual = '8' # HARDCODED. Pero siempre deberia ser el estado 1 por convencion
         self.cinta = cinta
         self.posicion_cabeza = 0
 
@@ -31,7 +31,7 @@ class MaquinaTuring:
                 # Mover el cabezal
                 if transicion['movimiento'] == 'R':
                     self.posicion_cabeza += 1
-                    if self.posicion_cabeza == len(self.cinta):
+                    if self.posicion_cabeza == len(self.cinta) or self.posicion_cabeza == len(self.cinta)-1:
                         self.cinta.append('▲')
 
                 elif transicion['movimiento'] == 'L':
@@ -46,8 +46,8 @@ class MaquinaTuring:
 
                 # Verificar si estamos en un estado aceptador
                 if self.estado_actual in self.estados_aceptadores:
-                    self.imprimirCinta()
                     print(f"Autómata ha aceptado en el estado {self.estado_actual}.")
+                    self.imprimirCinta()
                     break
 
                 self.imprimirCinta()
