@@ -1,4 +1,6 @@
 from collections import deque
+import tkinter as tk
+from time import sleep
 
 class MaquinaTuring:
     def __init__(self, estados: dict, estados_aceptadores: list, transiciones: dict, cinta: deque, estado_inicial: str, posicion_cabeza: int):
@@ -9,23 +11,22 @@ class MaquinaTuring:
         self.cinta = cinta
         self.posicion_cabeza = posicion_cabeza
 
-    def iniciar(self):
-        """Ejecuta el autómata, realizando transiciones hasta llegar a un estado aceptador o un estado de error."""
-        self.imprimir_cinta()
+    def iniciar(self, ventana, velocidad: int):
+        """Ejecuta el autómata paso a paso utilizando Tkinter y actualiza la visualización."""
+        simbolo_actual = self.cinta[self.posicion_cabeza]
 
-        while True:
-            simbolo_actual = self.cinta[self.posicion_cabeza]
+        if (self.estado_actual, simbolo_actual) in self.transiciones:
+            self.realizar_transicion(simbolo_actual)
+            self.actualizar_visualizacion(ventana)
 
-            if (self.estado_actual, simbolo_actual) in self.transiciones:
-                self.realizar_transicion(simbolo_actual)
-                if self.estado_actual in self.estados_aceptadores:
-                    print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
-                    self.imprimir_cinta()
-                    break
+            if self.estado_actual in self.estados_aceptadores:
+                print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
                 self.imprimir_cinta()
+                self.actualizar_visualizacion(ventana)  # Actualización final
             else:
-                print("Estado de error")
-                break
+                ventana.after(velocidad, self.iniciar, ventana, velocidad)  # Llama al siguiente paso
+        else:
+            print("Estado de error")
 
     def realizar_transicion(self, simbolo_actual):
         """Ejecuta la transición basada en el símbolo actual y el estado."""
@@ -58,3 +59,33 @@ class MaquinaTuring:
             for i, valor in enumerate(self.cinta)
         ]
         print(''.join(cinta_con_cabeza))
+
+    def actualizar_visualizacion(self, ventana):
+
+        # Si no existe el atributo `widgets_cinta`, lo creamos para almacenar las referencias
+        if not hasattr(self, "widgets_cinta"):
+            self.widgets_cinta = []  # Lista para almacenar los widgets de la cinta
+
+        # Expandir o contraer la lista de widgets según el tamaño de la cinta
+        while len(self.widgets_cinta) < len(self.cinta):
+            etiqueta = tk.Label(ventana, font=("Arial", 14), borderwidth=2, relief="solid", width=2)
+            etiqueta.grid(row=0, column=len(self.widgets_cinta))
+            self.widgets_cinta.append(etiqueta)
+
+        while len(self.widgets_cinta) > len(self.cinta):
+            widget = self.widgets_cinta.pop()
+            widget.destroy()
+
+        # Actualizar los textos de los widgets para reflejar el contenido de la cinta
+        for i, simbolo in enumerate(self.cinta):
+            self.widgets_cinta[i].config(text=simbolo)
+
+        # Si ya existe el widget para la cabeza, solo actualizamos su posición
+        if hasattr(self, "widget_cabeza"):
+            self.widget_cabeza.grid_forget()  # Ocultamos el widget actual
+        else:
+            # Si no existe, lo creamos
+            self.widget_cabeza = tk.Label(ventana, text="▲", font=("Arial", 14), fg="red")
+
+        # Posicionar la cabeza en la nueva ubicación
+        self.widget_cabeza.grid(row=1, column=self.posicion_cabeza)

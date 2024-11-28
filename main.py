@@ -1,5 +1,6 @@
 from utils.csv_reader import leer_archivo_estados, leer_archivo_transiciones, encontrar_estados_aceptadores
 from turing.MaquinaTuring import MaquinaTuring
+import tkinter as tk
 
 from collections import deque
 
@@ -27,4 +28,11 @@ mt = MaquinaTuring(
     posicion_cabeza=configuracion['posicion_cabeza']
 )
 
-mt.iniciar()
+# Crear la ventana de Tkinter
+ventana = tk.Tk()
+ventana.title("Máquina de Turing")
+
+# Ejecutar la máquina
+velocidad_maquina = 250 # En milisegundos
+ventana.after(100, lambda: mt.iniciar(ventana, velocidad_maquina))
+ventana.mainloop()
