@@ -21,6 +21,7 @@ class MaquinaTuring:
             self.cinta.appendleft('▲')
             self.posicion_cabeza += 1  # Ajustar posición del cabezal tras agregar a la izquierda
 
+
     def iniciar(self, canvas, frame_cinta, velocidad: int, boton_iniciar):
         """Ejecuta el autómata paso a paso utilizando Tkinter y actualiza la visualización."""
         self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
@@ -48,6 +49,7 @@ class MaquinaTuring:
                 canvas.after(velocidad, lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar))  # Llama al siguiente paso
         else:
             print("Estado de error")
+
 
     def realizar_transicion(self, simbolo_actual):
         """Ejecuta la transición basada en el símbolo actual y el estado."""
@@ -86,12 +88,13 @@ class MaquinaTuring:
     def actualizar_visualizacion(self, canvas, frame_cinta):
         """Actualiza la cinta y el cabezal en la interfaz gráfica sin destruir todo."""
         # Actualizar los widgets de la cinta
-        if not self.widgets_cinta:  # Crear los widgets solo la primera vez
-            for i, simbolo in enumerate(self.cinta):
-                etiqueta = tk.Label(frame_cinta, text=simbolo, font=("Arial", 16), borderwidth=2, relief="solid", width=2, height=1)
-                etiqueta.grid(row=0, column=i, padx=2, pady=2)
-                self.widgets_cinta.append(etiqueta)
-        else:  # Actualizar el texto de los widgets existentes
+        if len(self.widgets_cinta) != len(self.cinta):  # Si la cantidad de elementos en la cinta ha cambiado, actualizamos
+            # Eliminar los widgets antiguos si la cinta se ha reducido
+            for widget in self.widgets_cinta[len(self.cinta):]:
+                widget.destroy()
+            self.widgets_cinta = self.widgets_cinta[:len(self.cinta)]  # Reducir la lista de widgets si la cinta ha disminuido
+
+            # Crear nuevos widgets si la cinta ha crecido
             for i, simbolo in enumerate(self.cinta):
                 if i < len(self.widgets_cinta):
                     self.widgets_cinta[i].config(text=simbolo)
@@ -99,6 +102,10 @@ class MaquinaTuring:
                     etiqueta = tk.Label(frame_cinta, text=simbolo, font=("Arial", 16), borderwidth=2, relief="solid", width=2, height=1)
                     etiqueta.grid(row=0, column=i, padx=2, pady=2)
                     self.widgets_cinta.append(etiqueta)
+        else:
+            # Si la cantidad de elementos en la cinta no ha cambiado, solo actualizamos los textos
+            for i, simbolo in enumerate(self.cinta):
+                self.widgets_cinta[i].config(text=simbolo)
 
         # Actualizar la posición del cabezal
         if not self.widget_cabeza:
@@ -132,6 +139,7 @@ class MaquinaTuring:
             canvas.yview_moveto(y_offset / canvas_height)  # Mover el scroll verticalmente
         else:
             canvas.yview_moveto(0)  # Asegurarse de que el scroll esté habilitado si la cinta es mayor
+
 
     def cargar_cinta_desde_archivo(self, archivo):
         with open(archivo, 'r') as f:

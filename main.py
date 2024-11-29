@@ -99,7 +99,7 @@ dibujar_cinta_inicial()
 
 def iniciar_maquina():
     """Inicia la máquina de Turing al presionar el botón 'Iniciar'."""
-    velocidad_maquina = 100  # En milisegundos
+    velocidad_maquina = 50  # En milisegundos
     boton_iniciar.config(state=tk.DISABLED)  # Deshabilitar el botón
     ventana.after(100, lambda: mt.iniciar(canvas, frame_cinta, velocidad_maquina, boton_iniciar))  # Llama a iniciar
 
