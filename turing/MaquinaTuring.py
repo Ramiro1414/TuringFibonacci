@@ -23,6 +23,7 @@ class MaquinaTuring:
 
     def iniciar(self, canvas, frame_cinta, velocidad: int, boton_iniciar):
         """Ejecuta el autómata paso a paso utilizando Tkinter y actualiza la visualización."""
+        self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
         simbolo_actual = self.cinta[self.posicion_cabeza]
 
         # Deshabilitar el botón "Iniciar" al presionarlo
@@ -36,6 +37,12 @@ class MaquinaTuring:
             if self.estado_actual in self.estados_aceptadores:
                 print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
                 self.imprimir_cinta()
+                self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
+                self.escribir_cinta_en_archivo()
+                boton_iniciar.config(state=tk.NORMAL)
+                self.cinta = self.cargar_cinta_desde_archivo("cinta.txt")
+                self.posicion_cabeza = 2
+                self.estado_actual = '1'
                 self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
             else:
                 canvas.after(velocidad, lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar))  # Llama al siguiente paso
@@ -68,6 +75,13 @@ class MaquinaTuring:
             for i, valor in enumerate(self.cinta)
         ]
         print(''.join(cinta_con_cabeza))
+
+    def escribir_cinta_en_archivo(self):
+        """Guarda el contenido de la cinta en el archivo cinta.txt"""
+        # Abrir el archivo en modo escritura (borrará su contenido previo)
+        with open("cinta.txt", "w") as archivo:
+            # Convertir los elementos del deque a una cadena y escribirla en el archivo
+            archivo.write(''.join(map(str, self.cinta)))
 
     def actualizar_visualizacion(self, canvas, frame_cinta):
         """Actualiza la cinta y el cabezal en la interfaz gráfica sin destruir todo."""
@@ -118,3 +132,15 @@ class MaquinaTuring:
             canvas.yview_moveto(y_offset / canvas_height)  # Mover el scroll verticalmente
         else:
             canvas.yview_moveto(0)  # Asegurarse de que el scroll esté habilitado si la cinta es mayor
+
+    def cargar_cinta_desde_archivo(self, archivo):
+        with open(archivo, 'r') as f:
+            contenido = f.read().strip()  # Leer el contenido y eliminar espacios en blanco alrededor
+        
+        # Reducir los triángulos en los extremos a tres
+        contenido = contenido.lstrip('▲').rstrip('▲')  # Eliminar todos los triángulos de ambos extremos
+        contenido = f"▲▲▲{contenido}▲▲▲"  # Añadir exactamente tres triángulos a cada lado
+
+        # Crear el deque a partir del contenido procesado
+        cinta = deque(contenido)
+        return cinta

@@ -6,9 +6,20 @@ from collections import deque
 
 def cargar_cinta_desde_archivo(archivo):
     with open(archivo, 'r') as f:
-        contenido = f.read().strip()  # O usa .splitlines() si hay varias líneas
-        cinta = deque(contenido)
+        contenido = f.read().strip()  # Leer el contenido y eliminar espacios en blanco alrededor
+    
+    # Reducir los triángulos en los extremos a tres
+    contenido = contenido.lstrip('▲').rstrip('▲')  # Eliminar todos los triángulos de ambos extremos
+    contenido = f"▲▲▲{contenido}▲▲▲"  # Añadir exactamente tres triángulos a cada lado
+
+    # Crear el deque a partir del contenido procesado
+    cinta = deque(contenido)
     return cinta
+
+# Ejemplo de uso
+#cinta = cargar_cinta_desde_archivo("cinta.txt")
+#print("".join(cinta))  # Imprime el resultado procesado
+
 
 configuracion, transiciones = leer_archivo_transiciones("fibonacci.csv")
 estados = leer_archivo_estados(configuracion['archivo_estados'])
@@ -88,7 +99,7 @@ dibujar_cinta_inicial()
 
 def iniciar_maquina():
     """Inicia la máquina de Turing al presionar el botón 'Iniciar'."""
-    velocidad_maquina = 20  # En milisegundos
+    velocidad_maquina = 100  # En milisegundos
     boton_iniciar.config(state=tk.DISABLED)  # Deshabilitar el botón
     ventana.after(100, lambda: mt.iniciar(canvas, frame_cinta, velocidad_maquina, boton_iniciar))  # Llama a iniciar
 
