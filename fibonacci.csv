@@ -1,0 +1,6 @@
+# Configuración de la máquina de Turing
+estado_inicial;
+posicion_cabeza;0
+archivo_estados;estados_fibonacci.csv
+
+# Transiciones
