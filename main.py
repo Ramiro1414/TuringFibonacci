@@ -12,7 +12,7 @@ def cargar_cinta_desde_archivo(archivo):
         cinta = deque(contenido)
     return cinta
 
-configuracion, transiciones = leer_archivo_transiciones("suma_binaria.csv")
+configuracion, transiciones = leer_archivo_transiciones("fibonacci.csv")
 estados = leer_archivo_estados(configuracion['archivo_estados'])
 estados_aceptadores = encontrar_estados_aceptadores(estados)
 
@@ -33,6 +33,6 @@ ventana = tk.Tk()
 ventana.title("Máquina de Turing")
 
 # Ejecutar la máquina
-velocidad_maquina = 250 # En milisegundos
+velocidad_maquina = 100 # En milisegundos
 ventana.after(100, lambda: mt.iniciar(ventana, velocidad_maquina))
 ventana.mainloop()
