@@ -13,11 +13,11 @@ def cargar_cinta_desde_archivo(archivo):
     return cinta
 
 
-def escribir_cinta_en_archivo(self):
+def escribir_cinta_en_archivo(cinta):
     """Guarda el contenido de la cinta en el archivo cinta.txt, con exactamente 3 triángulos en cada extremo."""
     # Asegurarse de que la cinta tenga solo 3 triángulos a cada lado
     # Eliminar cualquier triángulo adicional
-    cinta_guardada = ''.join(map(str, self.cinta))
+    cinta_guardada = ''.join(map(str, cinta))
 
     # Eliminar los triángulos extra en los extremos
     cinta_guardada = cinta_guardada.lstrip('▲').rstrip('▲')
@@ -31,12 +31,12 @@ def escribir_cinta_en_archivo(self):
         
         
 def get_color_simbolo(simbolo):
-    """Devuelve el color de fondo según el símbolo."""
+    """Devuelve el color de fondo según el símbolo basado en la nueva paleta."""
     colores = {
-    '0': 'lightgreen',
-    '1': 'lightgreen',
-    '#': 'orange',
-    '▲': 'darkgray',
-    '*': 'violet',
+        '0': '#4E97D1',
+        '1': '#4E97D1',
+        '#': '#BCEEFF',
+        '▲': '#ADBAC0',
+        '*': '#E64663',
     }
     return colores.get(simbolo, 'white')  # Por defecto, blanco

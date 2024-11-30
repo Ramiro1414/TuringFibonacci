@@ -26,9 +26,9 @@ class MaquinaTuring:
         
     def ajustar_espacios_cinta(self):
         """Asegura que siempre haya 3 espacios en los extremos de la cinta."""
-        while len(self.cinta) - self.posicion_cabeza < 2:  # Asegurar 3 espacios a la derecha
+        while len(self.cinta) - self.posicion_cabeza <= 3:  # Asegurar 3 espacios a la derecha
             self.cinta.append('▲')
-        while self.posicion_cabeza < 2:
+        while self.posicion_cabeza <= 2:
             self.cinta.appendleft('▲')
             self.posicion_cabeza += 1  # Ajustar posición del cabezal tras agregar a la izquierda
 
@@ -51,7 +51,7 @@ class MaquinaTuring:
                 print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
                 self.imprimir_cinta()
                 self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
-                escribir_cinta_en_archivo()
+                escribir_cinta_en_archivo(self.cinta)
 
                 # Habilitar el botón "Limpiar" al finalizar
                 boton_limpiar.config(state=tk.NORMAL)
