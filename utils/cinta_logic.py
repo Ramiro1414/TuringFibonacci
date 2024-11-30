@@ -33,9 +33,9 @@ def escribir_cinta_en_archivo(cinta):
 def get_color_simbolo(simbolo):
     """Devuelve el color de fondo según el símbolo basado en la nueva paleta."""
     colores = {
-        '0': '#4E97D1',
-        '1': '#4E97D1',
-        '#': '#BCEEFF',
+        '0': '#5AB2DA',
+        '1': '#5AB2DA',
+        '#': '#C9E9FC',
         '▲': '#ADBAC0',
         '*': '#E64663',
     }

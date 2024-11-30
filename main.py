@@ -7,7 +7,7 @@ from utils.cinta_logic import cargar_cinta_desde_archivo, get_color_simbolo
 
 def crear_control_zoom():
     """Crea un control deslizante para cambiar el zoom de la cinta."""
-    control_zoom = tk.Scale(ventana, from_=0.4, to=2, orient="horizontal", resolution=0.1, label="Zoom")
+    control_zoom = tk.Scale(ventana, from_=0.5, to=1.5, orient="horizontal", resolution=0.1, label="Zoom")
     control_zoom.set(mt.factor_zoom)  # Zoom inicial se adapta al valor interno de la máquina
     control_zoom.pack(side=tk.TOP, pady=10)
     control_zoom.bind("<ButtonRelease-1>", lambda e: mt.cambiar_zoom(control_zoom.get(), canvas, frame_cinta))

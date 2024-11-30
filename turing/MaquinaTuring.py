@@ -56,11 +56,13 @@ class MaquinaTuring:
                 # Habilitar el botón "Limpiar" al finalizar
                 boton_limpiar.config(state=tk.NORMAL)
             else:
-                canvas.after(velocidad, lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar, boton_limpiar))  # Llama al siguiente paso
+                # Tiempo de espera dinámico ajustado según la velocidad
+                canvas.after(max(10, velocidad), lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar, boton_limpiar))  # Llama al siguiente paso
         else:
             print("Estado de error")
             # Cuando hay un error, habilitar el botón "Limpiar" y deshabilitar "Iniciar"
             boton_limpiar.config(state=tk.NORMAL)
+
 
 
     def realizar_transicion(self, simbolo_actual):
@@ -95,35 +97,35 @@ class MaquinaTuring:
 
    
    
-   
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
    
    
-   
-
     def actualizar_visualizacion(self, canvas, frame_cinta):
-        """Actualiza la visualización de la cinta con colores y zoom."""
+        """Actualiza la visualización de la cinta con colores, zoom y mantiene una posición relativa del scroll."""
+        # Verificar si hay suficientes widgets en la lista
+        while len(self.widgets_cinta) < len(self.cinta):
+            simbolo = self.cinta[len(self.widgets_cinta)]
+            etiqueta = tk.Label(
+                frame_cinta,
+                text=simbolo,
+                font=("Arial", int(18 * self.factor_zoom)),
+                borderwidth=2,
+                relief="solid",
+                width=4,
+                height=2,
+                bg=get_color_simbolo(simbolo),
+            )
+            etiqueta.grid(row=0, column=len(self.widgets_cinta), padx=0, pady=(50, 0))
+            self.widgets_cinta.append(etiqueta)
+
+        # Actualiza los widgets existentes
         for i, simbolo in enumerate(self.cinta):
-            etiqueta = self.widgets_cinta[i] if i < len(self.widgets_cinta) else None
-            if etiqueta:
-                etiqueta.config(
-                    text=simbolo,
-                    font=("Arial", int(18 * self.factor_zoom)),
-                    bg=get_color_simbolo(simbolo)  # Actualizar color
-                )
-            else:
-                etiqueta = tk.Label(
-                    frame_cinta,
-                    text=simbolo,
-                    font=("Arial", int(18 * self.factor_zoom)),
-                    borderwidth=2,
-                    relief="solid",
-                    width=4,
-                    height=2,
-                    bg=get_color_simbolo(simbolo),
-                )
-                etiqueta.grid(row=0, column=i, padx=0, pady=(50, 0))
-                self.widgets_cinta.append(etiqueta)
+            etiqueta = self.widgets_cinta[i]
+            etiqueta.config(
+                text=simbolo,
+                font=("Arial", int(18 * self.factor_zoom)),
+                bg=get_color_simbolo(simbolo)
+            )
 
         # Actualizar la posición del cabezal
         if not self.widget_cabeza:
@@ -132,43 +134,21 @@ class MaquinaTuring:
         else:
             self.widget_cabeza.grid(row=1, column=self.posicion_cabeza)
 
-        # Ajuste del scroll
+        # Ajustar el área de scroll
         frame_cinta.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
-        
-        # Ajustar el canvas (en términos de scroll)
-        canvas_width = canvas.winfo_width()
-        canvas_height = canvas.winfo_height()
-        cinta_width = frame_cinta.winfo_width()
-        cinta_height = frame_cinta.winfo_height()
 
-        # Si la cinta es más pequeña que el canvas, centrarla horizontalmente
-        if cinta_width < canvas_width:
-            x_offset = (canvas_width - cinta_width) / 2  # Calcular desplazamiento para centrar
-            canvas.xview_moveto(x_offset / canvas_width)  # Mover el scroll horizontalmente
-        else:
-            canvas.xview_moveto(0)  # Asegurarse de que el scroll esté habilitado si la cinta es mayor
 
-        # Centrado vertical
-        if cinta_height < canvas_height:
-            y_offset = (canvas_height - cinta_height) / 2
-            canvas.yview_moveto(y_offset / canvas_height)
-        else:
-            canvas.yview_moveto(0)
+        # Mantener la posición del scroll (código previo sigue siendo útil)
+        self.mantener_scroll(canvas)
 
-        # Actualizar la barra de scroll solo si la cinta se extiende
-        frame_cinta.update_idletasks()
-        canvas.config(scrollregion=canvas.bbox("all"))
-        
-        # Centrar la cinta también verticalmente
-        canvas_height = canvas.winfo_height()  # Altura del canvas
-        cinta_height = frame_cinta.winfo_height()  # Altura del frame de la cinta
 
-        if cinta_height < canvas_height:
-            y_offset = (canvas_height - cinta_height) / 2  # Desplazamiento vertical
-            canvas.yview_moveto(y_offset / canvas_height)  # Mover el scroll verticalmente
-        else:
-            canvas.yview_moveto(0)  # Asegurarse de que el scroll esté habilitado si la cinta es mayor
+    def mantener_scroll(self, canvas):
+        """Actualiza la región de desplazamiento solo cuando es necesario."""
+        # Verificar si la posición de la cinta ha cambiado significativamente
+        if self.posicion_cabeza % 10 == 0:  # Cada 10 pasos, actualiza el scroll
+            canvas.config(scrollregion=canvas.bbox("all"))
+
 
 
     def limpiar_visualizacion(self):
