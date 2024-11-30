@@ -26,9 +26,9 @@ class MaquinaTuring:
         
     def ajustar_espacios_cinta(self):
         """Asegura que siempre haya 3 espacios en los extremos de la cinta."""
-        while len(self.cinta) - self.posicion_cabeza <= 3:  # Asegurar 3 espacios a la derecha
+        if len(self.cinta) == self.posicion_cabeza:  # Asegurar 3 espacios a la derecha
             self.cinta.append('▲')
-        while self.posicion_cabeza <= 2:
+        if self.posicion_cabeza < 0:
             self.cinta.appendleft('▲')
             self.posicion_cabeza += 1  # Ajustar posición del cabezal tras agregar a la izquierda
 
@@ -142,7 +142,6 @@ class MaquinaTuring:
         # Mantener la posición del scroll (código previo sigue siendo útil)
         self.mantener_scroll(canvas)
 
-
     def mantener_scroll(self, canvas):
         """Actualiza la región de desplazamiento solo cuando es necesario."""
         # Verificar si la posición de la cinta ha cambiado significativamente
@@ -165,13 +164,18 @@ class MaquinaTuring:
 
 
     # Limpiar la visualización y habilitar los botones nuevamente
-    def limpiar_y_redibujar(self, canvas, frame_cinta, boton_iniciar, boton_limpiar):
+    def limpiar_y_redibujar(self, canvas, frame_cinta, estado_inicial, botones_arr):
         """Limpia la visualización, recarga la cinta desde el archivo y redibuja la cinta en la interfaz."""
         self.limpiar_visualizacion()  # Limpiar los widgets actuales
         self.cinta = cargar_cinta_desde_archivo("cinta.txt")  # Cargar la cinta desde el archivo
-        self.posicion_cabeza = 2  # Restablecer la posición del cabezal
-        self.estado_actual = '1'  # Restablecer el estado inicial
+        self.posicion_cabeza = 0  # Restablecer la posición del cabezal 0 HARDCODE
+        self.estado_actual = estado_inicial  # Restablecer el estado inicial
         self.actualizar_visualizacion(canvas, frame_cinta)  # Redibujar la cinta con la nueva configuración
-        boton_iniciar.config(state=tk.NORMAL)  # Habilitar el botón "Iniciar" nuevamente
-        boton_limpiar.config(state=tk.NORMAL)  # Habilitar el botón "Limpiar" después de que se termine
+        
+        botones_arr["iniciar"].config(state=tk.NORMAL)
+        botones_arr["limpiar"].config(state=tk.DISABLED)
+        botones_arr["muy rapido"].config(state=tk.NORMAL)
+        botones_arr["rapido"].config(state=tk.NORMAL)
+        botones_arr["medio"].config(state=tk.NORMAL)
+        botones_arr["lento"].config(state=tk.NORMAL)
 

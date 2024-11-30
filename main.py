@@ -14,13 +14,23 @@ def crear_control_zoom():
 
 def limpiar_cinta():
     """Limpia la cinta y habilita el botón 'Iniciar'."""
-    mt.limpiar_y_redibujar(canvas, frame_cinta, boton_iniciar, boton_limpiar)
+    mt.limpiar_y_redibujar(canvas, frame_cinta, configuracion['estado_inicial'], botones_arr)
 
 def iniciar_maquina():
     """Inicia la máquina de Turing al presionar el botón 'Iniciar'."""
+    
+    botones_arr["iniciar"].config(state=tk.DISABLED)
+    botones_arr["limpiar"].config(state=tk.DISABLED)
+    botones_arr["muy rapido"].config(state=tk.DISABLED)
+    botones_arr["rapido"].config(state=tk.DISABLED)
+    botones_arr["medio"].config(state=tk.DISABLED)
+    botones_arr["lento"].config(state=tk.DISABLED)
+    
     boton_iniciar.config(state=tk.DISABLED)  # Deshabilitar el botón "Iniciar"
     boton_limpiar.config(state=tk.DISABLED)  # Deshabilitar el botón "Limpiar"
-    ventana.after(50, lambda: mt.iniciar(canvas, frame_cinta, velocidad_maquina, boton_iniciar, boton_limpiar))  # Llama a iniciar
+    ventana.after(50, lambda: mt.iniciar(canvas, frame_cinta, velocidad_maquina, boton_iniciar, boton_limpiar))  # Llama a iniciar    
+    botones_arr["limpiar"].config(state=tk.NORMAL)
+
 
 def dibujar_cinta_inicial(tamano_fuente=18):
     """Dibuja la cinta inicial con el cabezal en su posición inicial."""
@@ -136,6 +146,15 @@ boton_lento = ttk.Button(frame_velocidades, text="Lento", command=lambda: cambia
 boton_lento.grid(row=0, column=3, padx=5)
 
 dibujar_cinta_inicial()
+
+botones_arr = {
+    "iniciar" : boton_iniciar,
+    "limpiar" : boton_limpiar,
+    "muy rapido" : boton_muy_rapido,
+    "rapido" : boton_rapido,
+    "medio" : boton_medio,
+    "lento" : boton_lento
+}
 
 # Estilo de los botones
 style = ttk.Style()

@@ -1,9 +1,19 @@
 # Configuración de la máquina de Turing
-estado_inicial;1
-posicion_cabeza;2
+estado_inicial;100
+posicion_cabeza;0
 archivo_estados;estados_fibonacci.csv
 
 # Transiciones
+100;▲;▲;R;101
+101;0;0;L;1
+101;▲;▲;L;102
+102;▲;0;R;103
+103;▲;#;R;104
+104;▲;1;N;105
+105;0;0;L;105
+105;1;1;L;105
+105;#;#;L;105
+105;▲;▲;N;1
 1;▲;▲;R;2
 2;0;0;R;2
 2;1;1;R;2
