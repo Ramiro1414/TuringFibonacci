@@ -27,7 +27,7 @@ Autores:
 6. Ejecutar el programa.
 `python3 menu_turing.py`
 
-[IMPORTANT]
+> [!IMPORTANT]
 > Utilizamos algunas convenciones para la implementación de este simulador:
 >
 > * La cinta por defecto está totalmente vacía (es decir, todas las celdas tienen un espacio).
