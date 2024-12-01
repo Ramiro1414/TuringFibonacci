@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
+import subprocess
 
 global label_archivo
 
@@ -101,8 +102,19 @@ def agregar_fila():
     tabla.append(fila)
     filas += 1
 
+
 def cargar_maquina():
-    print("Maquina cargada")
+    if archivo_seleccionado:
+        try:
+            # Ejecutar main.py con el archivo seleccionado, sin el argumento --cinta
+            subprocess.run(["python", "main.py", "--config", archivo_seleccionado])
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
+    else:
+        messagebox.showerror("Error", "No se ha seleccionado ningún archivo para cargar.")
+
+
+        
 
 def validar_tabla(tabla):
     """
@@ -146,9 +158,7 @@ def validar_estado_inicial(tabla, estado_inicial):
     return False  # Estado inicial no encontrado
 
 
-# Función para guardar los datos y cargar la maquina creada
 def guardar_datos():
-
     # Obtener valores de los campos
     estado_inicial = entry_estado_inicial.get()
     estado_aceptador = entry_estado_aceptador.get()
@@ -156,11 +166,13 @@ def guardar_datos():
     archivo_estados = f"estados_{nombre_maquina}.csv"
     cinta = entry_cinta.get()
 
+    nombre_archivo_config = f"{nombre_maquina}.csv"
+
     tabla_valida_sin_vacios = validar_tabla(tabla)
     tabla_valida_columna_movimiento = validar_columna_movimiento(tabla)
 
     if not tabla_valida_sin_vacios:
-        messagebox.showerror("Error", "Hay celdas vacias en la tabla.")
+        messagebox.showerror("Error", "Hay celdas vacías en la tabla.")
         return
     
     if not tabla_valida_columna_movimiento:
@@ -180,11 +192,10 @@ def guardar_datos():
         messagebox.showerror("Error", "El campo 'Estado aceptador' está vacío.")
         return
 
-    # Validar nombre de la máquina
     if not nombre_maquina.strip():
         messagebox.showerror("Error", "El campo 'Nombre de la máquina' está vacío.")
         return
-    
+
     if not cinta.strip():
         respuesta = messagebox.askokcancel(
             "Atención",
@@ -197,75 +208,63 @@ def guardar_datos():
     contenido = (
         "# Configuración de la máquina de Turing\n"
         f"estado_inicial;{estado_inicial}\n"
-        f"posicion_cabeza;{0}\n"
-        f"archivo_estados;{archivo_estados}\n\n"
+        f"posicion_cabeza;0\n"
+        f"archivo_estados;{archivo_estados}\n"
+        f"cinta;{cinta}\n\n"
         "# Transiciones\n"
     )
 
-    # Agregar contenido de la tabla (transiciones)
     for fila in tabla:
-        valores = [celda.get() for celda in fila]  # Obtener valores de cada celda
-        contenido += ";".join(valores) + "\n"  # Unir valores por ';' y agregar nueva línea
+        valores = [celda.get() for celda in fila]
+        contenido += ";".join(valores) + "\n"
 
-    # Guardar el archivo de la máquina de Turing
     try:
-        with open(f"{nombre_maquina}.csv", "w") as archivo:
+        with open(nombre_archivo_config, "w") as archivo:
             archivo.write(contenido)
-        print(f"Archivo '{nombre_maquina}.csv' guardado exitosamente.")
     except Exception as e:
-        print(f"Error al guardar el archivo: {e}")
+        messagebox.showerror("Error", f"No se pudo guardar el archivo de configuración: {e}")
+        return
 
-    # Generar el archivo de estados
-    estados = set()  # Usamos un conjunto para evitar estados repetidos
-
-    # Recorremos la primera columna para obtener los estados
-    for fila in tabla:
-        estado = fila[0].get()  # Estado está en la primera columna
-        estados.add(estado)
-
+    estados = set(fila[0].get() for fila in tabla)
     # Crear el contenido del archivo de estados
     contenido_estados = ""
 
+    # Convertir estado_aceptador de una cadena "1, 3, 5" a una lista
     estados_aceptadores = [estado.strip() for estado in estado_aceptador.split(",")]
 
-    # Variable para controlar si algún estado aceptador fue agregado
-    estado_agregado = False
+    # Crear un conjunto de los estados aceptadores para evitar duplicados
+    estados_aceptadores_unicos = set(estados_aceptadores)
 
-    # Crear el contenido de los estados
-    contenido_estados = ""
-    for estado in estados:
-        if estado in estados_aceptadores:
-            contenido_estados += f"{estado};1\n"  # Estado aceptador lleva '1'
-            estado_agregado = True
-        else:
-            contenido_estados += f"{estado};0\n"  # Los demás estados llevan '0'
+    # Crear un conjunto de los estados existentes para comparar
+    estados_existentes = set(estados)
 
-    # Verificar si algún estado aceptador no estaba en la tabla
-    for estado_acept in estados_aceptadores:
-        if estado_acept not in estados:
-            contenido_estados += f"{estado_acept};1\n"  # Agregar el estado aceptador faltante
+    # Verificar y agregar los estados aceptadores
+    for estado_acept in estados_aceptadores_unicos:
+        # Si el estado aceptador está en los estados existentes o es un aceptador adicional
+        if estado_acept in estados_existentes or estado_acept not in estados_existentes:
+            contenido_estados += f"{estado_acept};1\n"
+        try:
+            with open(archivo_estados, "w") as archivo:
+                archivo.write(contenido_estados)
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo guardar el archivo de estados: {e}")
+            return
 
-    # Guardar el archivo de estados
+    # Aquí ya no se necesita guardar "cinta.txt", ya que la cinta está en el archivo CSV
+
+    # Invocar el main.py para cargar la máquina automáticamente, solo con el archivo de configuración
     try:
-        with open(archivo_estados, "w") as archivo:
-            archivo.write(contenido_estados)
-        print(f"Archivo '{archivo_estados}' guardado exitosamente.")
+        subprocess.run(["python", "main.py", "--config", nombre_archivo_config])
     except Exception as e:
-        print(f"Error al guardar el archivo de estados: {e}")
+        messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
 
-    # Guardar la cadena de la cinta en 'cinta.txt'
-    try:
-        with open("cinta.txt", "w") as archivo_cinta:
-            archivo_cinta.write(cinta)  # Escribir el contenido de 'cinta'
-        print("Archivo 'cinta.txt' guardado exitosamente.")
-    except Exception as e:
-        print(f"Error al guardar 'cinta.txt': {e}")
+
 
 # Crear la ventana principal
 ventana = tk.Tk()
 
 # Configuración de la ventana
-ventana.title("Simulador de Máquina de Turing")
+ventana.title("Simulador de Máquina de Turing") 
 
 # Obtener dimensiones de la pantalla
 ancho_pantalla = ventana.winfo_screenwidth()

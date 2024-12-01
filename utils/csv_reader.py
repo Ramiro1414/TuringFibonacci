@@ -14,6 +14,8 @@ def leer_archivo_transiciones(csv_filename: str):
                 continue  # Ignorar líneas en blanco
             if fila[0].startswith('#'):
                 continue  # Ignorar comentarios
+            if fila[0].startswith('cinta'):
+                continue  # Ignorar comentarios
 
             # Leer configuración antes de las transiciones
             if fila[0] == "estado_inicial":

@@ -2,6 +2,7 @@
 estado_inicial;100
 posicion_cabeza;0
 archivo_estados;estados_fibonacci.csv
+cinta;▲0#1#1#10#11▲
 
 # Transiciones
 100;▲;▲;R;101

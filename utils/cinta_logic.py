@@ -1,22 +1,34 @@
 from collections import deque
 
-def cargar_cinta_desde_archivo(archivo):
-    with open(archivo, 'r') as f:
-        contenido = f.read().strip()  # Leer el contenido y eliminar espacios en blanco alrededor
-    
-    # Reducir los triángulos en los extremos a tres
-    contenido = contenido.lstrip('▲').rstrip('▲')  # Eliminar todos los triángulos de ambos extremos
-    contenido = f"▲{contenido}▲"  # Añadir exactamente tres triángulos a cada lado
+def cargar_cinta_desde_archivo(archivo_csv):
+    """
+    Carga la cinta desde un archivo CSV que contiene la configuración de la máquina de Turing.
+    Busca la línea que comienza con 'cinta;' para extraer su contenido.
+    """
+    cinta = None  # Variable para almacenar la cinta
+    with open(archivo_csv, 'r') as archivo:
+        for linea in archivo:
+            # Buscar la línea que comienza con 'cinta;'
+            if linea.startswith("cinta;"):
+                cinta = linea.split(';', 1)[1].strip()  # Obtener el contenido después de 'cinta;'
+                break
 
-    # Crear el deque a partir del contenido procesado
-    cinta = deque(contenido)
-    return cinta
+    if cinta is None:
+        raise ValueError("No se encontró la cinta en el archivo CSV.")
+
+    # Reducir los triángulos en los extremos a tres (por si acaso están mal formateados)
+    cinta = cinta.lstrip('▲').rstrip('▲')  # Eliminar triángulos adicionales en los extremos
+    cinta = f"▲{cinta}▲"  # Añadir exactamente tres triángulos a cada lado
+
+    # Crear un deque a partir del contenido procesado
+    return deque(cinta)
 
 
-def escribir_cinta_en_archivo(cinta):
-    """Guarda el contenido de la cinta en el archivo cinta.txt, con exactamente 3 triángulos en cada extremo."""
+
+def escribir_cinta_en_archivo(cinta, archivo_csv):
+    """Guarda el contenido de la cinta en el archivo CSV, con exactamente 3 triángulos en cada extremo."""
     # Asegurarse de que la cinta tenga solo 3 triángulos a cada lado
-    # Eliminar cualquier triángulo adicional
+    # Eliminar los triángulos extra en los extremos
     cinta_guardada = ''.join(map(str, cinta))
 
     # Eliminar los triángulos extra en los extremos
@@ -25,18 +37,38 @@ def escribir_cinta_en_archivo(cinta):
     # Añadir exactamente tres triángulos a cada lado
     cinta_guardada = f"▲{cinta_guardada}▲"
 
-    # Abrir el archivo en modo escritura (borrará su contenido previo)
-    with open("cinta.txt", "w") as archivo:
-        archivo.write(cinta_guardada)
+    # Abrir el archivo CSV y actualizar la línea que contiene la cinta
+    with open(archivo_csv, "r") as archivo:
+        lineas = archivo.readlines()
+
+    # Buscar la línea que empieza con "cinta;"
+    for i, linea in enumerate(lineas):
+        if linea.startswith("cinta;"):
+            lineas[i] = f"cinta;{cinta_guardada}\n"
+            break
+    else:
+        # Si no se encuentra la línea que comienza con "cinta;", añadirla
+        lineas.append(f"cinta;{cinta_guardada}\n")
+
+    # Guardar el archivo con la nueva cinta
+    with open(archivo_csv, "w") as archivo:
+        archivo.writelines(lineas)
+
         
         
 def get_color_simbolo(simbolo):
-    """Devuelve el color de fondo según el símbolo basado en la nueva paleta."""
-    colores = {
-        '0': '#5AB2DA',
-        '1': '#5AB2DA',
-        '#': '#C9E9FC',
-        '▲': '#ADBAC0',
-        '*': '#E64663',
-    }
-    return colores.get(simbolo, 'white')  # Por defecto, blanco
+    """Devuelve el color de fondo según el símbolo basado en las reglas genéricas."""
+    if 'a' <= simbolo <= 'z':  # Letras minúsculas
+        return '#D3F300'
+    elif '0' <= simbolo <= '9':  # Números
+        return '#5AB2DA'
+    elif simbolo == '#':  # Símbolo específico: #
+        return '#C9E9FC'
+    elif simbolo == '*':  # Símbolo específico: *
+        return '#E64663'
+    elif simbolo == '▲':  # Símbolo específico: ▲
+        return '#ADBAC0'
+    elif not simbolo.isalnum():  # Cualquier carácter especial no alfanumérico
+        return '#894dd1'
+    else:  # Para cualquier otro caso (por ejemplo, espacio u otros caracteres desconocidos)
+        return 'white'

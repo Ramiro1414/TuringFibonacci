@@ -1,9 +1,11 @@
+import argparse
 from utils.csv_reader import leer_archivo_estados, leer_archivo_transiciones, encontrar_estados_aceptadores
 from turing.MaquinaTuring import MaquinaTuring
 import tkinter as tk
 from tkinter import ttk
 from collections import deque
 from utils.cinta_logic import cargar_cinta_desde_archivo, get_color_simbolo
+
 
 def crear_control_zoom():
     """Crea un control deslizante para cambiar el zoom de la cinta."""
@@ -59,21 +61,27 @@ def cambiar_velocidad(velocidad, texto):
     label_velocidad.config(text=f"Velocidad: {texto}")
 
 
+parser = argparse.ArgumentParser(description="Simulador de Máquina de Turing")
+parser.add_argument("--config", required=True, help="Archivo de configuración de la máquina de Turing")
+args = parser.parse_args()
 
-configuracion, transiciones = leer_archivo_transiciones("fibonacci.csv")
+# Leer configuración desde argumentos
+configuracion, transiciones = leer_archivo_transiciones(args.config)
 estados = leer_archivo_estados(configuracion['archivo_estados'])
 estados_aceptadores = encontrar_estados_aceptadores(estados)
 
-cinta = cargar_cinta_desde_archivo("cinta.txt")
+# Cargar cinta desde el archivo de configuración
+cinta = cargar_cinta_desde_archivo(args.config)
 
 # Inicializo la máquina de Turing usando la configuración del CSV
 mt = MaquinaTuring(
+    args.config,
     estados=estados,
     estados_aceptadores=estados_aceptadores,
     transiciones=transiciones,
     cinta=cinta,
     estado_inicial=configuracion['estado_inicial'],
-    posicion_cabeza=configuracion['posicion_cabeza']
+    posicion_cabeza=configuracion['posicion_cabeza'],
 )
 
 # Ventana principal

@@ -1,11 +1,13 @@
 from collections import deque
 import tkinter as tk
 from utils.cinta_logic import cargar_cinta_desde_archivo, escribir_cinta_en_archivo, get_color_simbolo
+import tkinter.messagebox as mbox
+
 
 velocidad_maquina = 50
 
 class MaquinaTuring:
-    def __init__(self, estados: dict, estados_aceptadores: list, transiciones: dict, cinta: deque, estado_inicial: str, posicion_cabeza: int):
+    def __init__(self, archivo_csv, estados: dict, estados_aceptadores: list, transiciones: dict, cinta: deque, estado_inicial: str, posicion_cabeza: int):
         self.estados = estados
         self.estados_aceptadores = estados_aceptadores
         self.transiciones = transiciones
@@ -16,6 +18,7 @@ class MaquinaTuring:
         self.widget_cabeza = None  # Widget que representa el cabezal
         self.ajustar_espacios_cinta()  # Asegurarse de que haya 3 espacios a los extremos al inicio
         self.factor_zoom = 1  # Factor de zoom inicial
+        self.archivo_csv = archivo_csv
         
         
     def cambiar_zoom(self, factor_zoom, canvas, frame_cinta):
@@ -51,7 +54,7 @@ class MaquinaTuring:
                 print(f"\nAutómata ha aceptado en el estado {self.estado_actual}. Configuración de cinta al terminar:")
                 self.imprimir_cinta()
                 self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
-                escribir_cinta_en_archivo(self.cinta)
+                escribir_cinta_en_archivo(self.cinta, self.archivo_csv)
 
                 # Habilitar el botón "Limpiar" al finalizar
                 boton_limpiar.config(state=tk.NORMAL)
@@ -60,9 +63,15 @@ class MaquinaTuring:
                 canvas.after(max(10, velocidad), lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar, boton_limpiar))  # Llama al siguiente paso
         else:
             print("Estado de error")
+            self.mostrar_error()
             # Cuando hay un error, habilitar el botón "Limpiar" y deshabilitar "Iniciar"
             boton_limpiar.config(state=tk.NORMAL)
 
+
+
+    def mostrar_error(self):
+        """Muestra un diálogo de error si ocurre un problema con las transiciones."""
+        mbox.showerror("Error", "La máquina de Turing ha encontrado un estado inválido o no tiene transición definida.")
 
 
     def realizar_transicion(self, simbolo_actual):
@@ -167,7 +176,7 @@ class MaquinaTuring:
     def limpiar_y_redibujar(self, canvas, frame_cinta, estado_inicial, botones_arr):
         """Limpia la visualización, recarga la cinta desde el archivo y redibuja la cinta en la interfaz."""
         self.limpiar_visualizacion()  # Limpiar los widgets actuales
-        self.cinta = cargar_cinta_desde_archivo("cinta.txt")  # Cargar la cinta desde el archivo
+        self.cinta = cargar_cinta_desde_archivo(self.archivo_csv)  # Cargar la cinta desde el archivo
         self.posicion_cabeza = 0  # Restablecer la posición del cabezal 0 HARDCODE
         self.estado_actual = estado_inicial  # Restablecer el estado inicial
         self.actualizar_visualizacion(canvas, frame_cinta)  # Redibujar la cinta con la nueva configuración
