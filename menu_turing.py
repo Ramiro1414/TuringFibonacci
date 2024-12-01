@@ -11,7 +11,12 @@ def seleccionar_archivo():
 
     archivo = filedialog.askopenfilename(title="Selecciona un archivo")
     if archivo:
-        #print(f"Archivo seleccionado: {os.path.basename(archivo)}")
+        # Verificar que el archivo tenga extensión .csv
+        if not archivo.lower().endswith(".csv"):
+            messagebox.showerror("Error de archivo", "El archivo seleccionado no tiene la extensión .csv. Por favor, selecciona un archivo válido.")
+            return
+
+        # Actualizar la etiqueta con el nombre del archivo seleccionado
         label_archivo.config(text=f"Máquina seleccionada: {os.path.basename(archivo)}")
         archivo_seleccionado = os.path.basename(archivo)
         boton_crear.config(state="disabled")
@@ -128,6 +133,23 @@ def validar_tabla(tabla):
                 return False
     return True  # Si todas las celdas tienen contenido, devuelve True
 
+def validar_celdas_intermedias(tabla):
+    """
+    Verifica que las celdas de las columnas intermedias de la tabla contengan exactamente un carácter.
+    No valida las celdas de la primera ni de la última columna.
+    :param tabla: Lista de listas con widgets Entry (representando la tabla).
+    :return: True si todas las celdas intermedias tienen exactamente un carácter, False en caso contrario.
+    """
+    for fila_idx, fila in enumerate(tabla):
+        # Validar que la fila tiene al menos tres columnas para tener columnas intermedias
+        if len(fila) > 2:
+            # Recorrer las columnas intermedias (desde la segunda hasta la penúltima)
+            for col_idx in range(1, len(fila) - 1):
+                contenido = fila[col_idx].get().strip()  # Obtener valor de la celda
+                if len(contenido) != 1:  # Validar que no tenga exactamente un carácter
+                    return False
+    return True  # Si todas las celdas intermedias tienen un carácter, devuelve True
+
 def validar_columna_movimiento(tabla):
     """
     Valida que las celdas de la cuarta columna contengan valores válidos ('R', 'L', 'N').
@@ -173,6 +195,12 @@ def guardar_datos():
 
     if not tabla_valida_sin_vacios:
         messagebox.showerror("Error", "Hay celdas vacías en la tabla.")
+        return
+    
+    celdas_con_mas_de_un_caracter = validar_celdas_intermedias(tabla)
+
+    if not celdas_con_mas_de_un_caracter:
+        messagebox.showerror("Error", "El contenido de las celdas puede ser de solo un caracter")
         return
     
     if not tabla_valida_columna_movimiento:
