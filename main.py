@@ -29,11 +29,15 @@ def copiar_al_portapapeles():
     ventana.clipboard_append("▲")  # Copiar el carácter ▲ al portapapeles
 
 
-
-
-
 # Función para restablecer la interfaz al estado inicial
 def volver_a_inicio():
+    respuesta = messagebox.askyesno(
+        "Confirmar acción",
+        "¿Estás seguro de que deseas volver al inicio? Esto eliminará los cambios actuales."
+    )
+    if not respuesta:  # Si el usuario selecciona "No"
+        return
+
     global tabla, filas, columnas
     # Eliminar todos los widgets en el frame de la tabla
     for widget in frame_tabla.winfo_children():
@@ -63,8 +67,8 @@ def crear_maquina():
     tabla = []
 
     boton_archivo.config(state="disabled")
-    boton_guardar.pack()
     boton_volver.pack()  # Mostrar el botón "Volver"
+    boton_guardar.pack()
 
     # Crear encabezado no editable
     encabezados = ["Estado origen", "Leo de cinta", "Escribo en cinta", "Acción", "Estado destino"]
@@ -211,6 +215,13 @@ def validar_estado_inicial(tabla, estado_inicial):
 
 
 def guardar_datos():
+    respuesta = messagebox.askyesno(
+        "Confirmar acción",
+        "¿Estás seguro de que deseas guardar y cargar la máquina?"
+    )
+    if not respuesta:  # Si el usuario selecciona "No"
+        return
+    
     # Obtener valores de los campos
     estado_inicial = entry_estado_inicial.get()
     estado_aceptador = entry_estado_aceptador.get()
@@ -268,7 +279,8 @@ def guardar_datos():
         f"estado_inicial;{estado_inicial}\n"
         f"posicion_cabeza;0\n"
         f"archivo_estados;{archivo_estados}\n"
-        f"cinta;{cinta}\n\n"
+        f"cinta_original;{cinta}\n"
+        f"ultima_cinta;{cinta}\n\n"
         "# Transiciones\n"
     )
 
@@ -308,8 +320,6 @@ def guardar_datos():
             messagebox.showerror("Error", f"No se pudo guardar el archivo de estados: {e}")
             return
 
-    # Aquí ya no se necesita guardar "cinta.txt", ya que la cinta está en el archivo CSV
-
     # Invocar el main.py para cargar la máquina automáticamente, solo con el archivo de configuración
     try:
         subprocess.run(["python", "simulador.py", "--config", nombre_archivo_config])
@@ -323,10 +333,6 @@ ventana = tk.Tk()
 # Configuración de la ventana
 ventana.title("Simulador de Máquina de Turing") 
 
-# Crear el botón "Volver" (se mostrará al crear la tabla)
-boton_volver = tk.Button(ventana, text="Volver al inicio", command=volver_a_inicio, bg="orange", fg="black")
-boton_volver.pack(pady=5)
-boton_volver.pack_forget()
 
 # Obtener dimensiones de la pantalla
 ancho_pantalla = ventana.winfo_screenwidth()
@@ -378,10 +384,19 @@ boton_agregar_fila.config(state="disabled")
 boton_copiar = tk.Button(frame_botones, text="Copiar ▲ (espacio) al portapapeles", command=copiar_al_portapapeles)
 boton_copiar.pack(pady=5)
 
+# Frame separado para otros botones (Guardar y Volver)
+frame_botones_inferior = tk.Frame(ventana)
+frame_botones_inferior.pack(pady=10)
+
 # Botón "Guardar"
-boton_guardar = tk.Button(frame_botones, text="Guardar y cargar maquina", command=guardar_datos, bg="green", fg="white", font=("Arial", 12, "bold"))
-boton_guardar.pack(pady=5)
+boton_guardar = tk.Button(frame_botones_inferior, text="Guardar y cargar maquina", command=guardar_datos, bg="green", fg="white", font=("Arial", 12, "bold"))
+boton_guardar.pack(side=tk.LEFT, pady=10)
 boton_guardar.pack_forget()
+
+# Crear el botón "Volver" (se mostrará al crear la tabla)
+boton_volver = tk.Button(frame_botones_inferior, text="Volver al inicio", command=volver_a_inicio, bg="orange", fg="black")
+boton_volver.pack(side=tk.LEFT, pady=10)
+boton_volver.pack_forget()
 
 # Variables globales para la tabla
 tabla = []

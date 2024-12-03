@@ -4,7 +4,7 @@ from turing.MaquinaTuring import MaquinaTuring
 import tkinter as tk
 from tkinter import ttk
 from collections import deque
-from utils.cinta_logic import cargar_cinta_desde_archivo, get_color_simbolo
+from utils.cinta_logic import cargar_cinta_desde_archivo, get_color_simbolo, cargar_cinta_original
 
 
 def crear_control_zoom():
@@ -23,6 +23,7 @@ def iniciar_maquina():
     
     botones_arr["iniciar"].config(state=tk.DISABLED)
     botones_arr["limpiar"].config(state=tk.DISABLED)
+    botones_arr["cinta original"].config(state=tk.DISABLED)
     botones_arr["muy rapido"].config(state=tk.DISABLED)
     botones_arr["rapido"].config(state=tk.DISABLED)
     botones_arr["medio"].config(state=tk.DISABLED)
@@ -60,6 +61,11 @@ def cambiar_velocidad(velocidad, texto):
     velocidad_maquina = velocidad
     label_velocidad.config(text=f"Velocidad: {texto}")
 
+
+def cargar_cinta_original_simulador():
+    cinta = cargar_cinta_original(args.config)
+    mt.cinta = cinta
+    mt.limpiar_y_redibujar_cinta_original(canvas, frame_cinta, configuracion['estado_inicial'], botones_arr)
 
 parser = argparse.ArgumentParser(description="Simulador de Máquina de Turing")
 parser.add_argument("--config", required=True, help="Archivo de configuración de la máquina de Turing")
@@ -120,10 +126,12 @@ boton_limpiar = ttk.Button(frame_botones, text="Limpiar Cinta", command=limpiar_
 boton_limpiar.pack(side=tk.LEFT, padx=10)  # El botón "Limpiar" está a la izquierda
 boton_limpiar.config(state=tk.DISABLED)  # Inicialmente deshabilitado
 
+boton_cinta_original = ttk.Button(frame_botones, text="Cargar cinta original", command=cargar_cinta_original_simulador, style="TButton")
+boton_cinta_original.pack(side=tk.LEFT, padx=10)  # El botón "Limpiar" está a la izquierda
 
 # Definir las velocidades
 velocidades = {
-    "Muy rápido": 10,
+    "Muy rápido": 0,
     "Rápido": 50,
     "Medio": 100,
     "Lento": 500
@@ -158,6 +166,7 @@ dibujar_cinta_inicial()
 botones_arr = {
     "iniciar" : boton_iniciar,
     "limpiar" : boton_limpiar,
+    "cinta original" : boton_cinta_original,
     "muy rapido" : boton_muy_rapido,
     "rapido" : boton_rapido,
     "medio" : boton_medio,

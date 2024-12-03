@@ -1,6 +1,6 @@
 from collections import deque
 import tkinter as tk
-from utils.cinta_logic import cargar_cinta_desde_archivo, escribir_cinta_en_archivo, get_color_simbolo
+from utils.cinta_logic import cargar_cinta_desde_archivo, escribir_cinta_en_archivo, get_color_simbolo, cargar_cinta_original
 import tkinter.messagebox as mbox
 
 
@@ -38,6 +38,7 @@ class MaquinaTuring:
 
     def iniciar(self, canvas, frame_cinta, velocidad: int, boton_iniciar, boton_limpiar):
         """Ejecuta el autómata paso a paso utilizando Tkinter y actualiza la visualización."""
+        #print(self.cinta)
         self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
         simbolo_actual = self.cinta[self.posicion_cabeza]
 
@@ -60,7 +61,7 @@ class MaquinaTuring:
                 boton_limpiar.config(state=tk.NORMAL)
             else:
                 # Tiempo de espera dinámico ajustado según la velocidad
-                canvas.after(max(10, velocidad), lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar, boton_limpiar))  # Llama al siguiente paso
+                canvas.after(velocidad, lambda: self.iniciar(canvas, frame_cinta, velocidad, boton_iniciar, boton_limpiar))  # Llama al siguiente paso
         else:
             print("Estado de error")
             self.mostrar_error()
@@ -104,7 +105,7 @@ class MaquinaTuring:
         ]
         print(''.join(cinta_con_cabeza))
 
-   
+
    
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
    
@@ -177,6 +178,23 @@ class MaquinaTuring:
         """Limpia la visualización, recarga la cinta desde el archivo y redibuja la cinta en la interfaz."""
         self.limpiar_visualizacion()  # Limpiar los widgets actuales
         self.cinta = cargar_cinta_desde_archivo(self.archivo_csv)  # Cargar la cinta desde el archivo
+        self.posicion_cabeza = 0  # Restablecer la posición del cabezal 0 HARDCODE
+        self.estado_actual = estado_inicial  # Restablecer el estado inicial
+        self.actualizar_visualizacion(canvas, frame_cinta)  # Redibujar la cinta con la nueva configuración
+        
+        botones_arr["iniciar"].config(state=tk.NORMAL)
+        botones_arr["limpiar"].config(state=tk.DISABLED)
+        botones_arr["cinta original"].config(state=tk.NORMAL)
+        botones_arr["muy rapido"].config(state=tk.NORMAL)
+        botones_arr["rapido"].config(state=tk.NORMAL)
+        botones_arr["medio"].config(state=tk.NORMAL)
+        botones_arr["lento"].config(state=tk.NORMAL)
+        
+    # Limpiar la visualización y habilitar los botones nuevamente
+    def limpiar_y_redibujar_cinta_original(self, canvas, frame_cinta, estado_inicial, botones_arr):
+        """Limpia la visualización, recarga la cinta desde el archivo y redibuja la cinta en la interfaz."""
+        self.limpiar_visualizacion()  # Limpiar los widgets actuales
+        self.cinta = cargar_cinta_original(self.archivo_csv)  # Cargar la cinta desde el archivo
         self.posicion_cabeza = 0  # Restablecer la posición del cabezal 0 HARDCODE
         self.estado_actual = estado_inicial  # Restablecer el estado inicial
         self.actualizar_visualizacion(canvas, frame_cinta)  # Redibujar la cinta con la nueva configuración
