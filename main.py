@@ -213,6 +213,19 @@ def validar_estado_inicial(tabla, estado_inicial):
                 return True  # Estado inicial encontrado
     return False  # Estado inicial no encontrado
 
+def validar_estado_aceptador_en_columna(tabla, estado_aceptador):
+    """
+    Verifica si el estado aceptador se encuentra en la quinta columna de la tabla.
+    :param tabla: Lista de listas con widgets Entry (representando la tabla).
+    :param estado_aceptador: Estado aceptador a buscar.
+    :return: True si el estado aceptador está en la quinta columna, False de lo contrario.
+    """
+    for fila_idx, fila in enumerate(tabla):
+        if len(fila) >= 5:  # Asegurarse de que la fila tiene al menos cinco columnas
+            estado_destino = fila[4].get().strip()  # Obtener valor de la quinta columna
+            if estado_destino == estado_aceptador:
+                return True  # Estado aceptador encontrado en la quinta columna
+    return False  # Estado aceptador no encontrado en la quinta columna
 
 def guardar_datos():
     respuesta = messagebox.askyesno(
@@ -259,6 +272,11 @@ def guardar_datos():
     
     if not estado_aceptador.strip():
         messagebox.showerror("Error", "El campo 'Estado aceptador' está vacío.")
+        return
+    
+    estado_aceptador_en_ultima_columna = validar_estado_aceptador_en_columna(tabla, estado_aceptador)
+    if not estado_aceptador_en_ultima_columna:
+        messagebox.showerror("Error", "El estado aceptador debe estar al menos una vez en la columna de 'estados de destino'.")
         return
 
     if not nombre_maquina.strip():

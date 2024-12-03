@@ -42,3 +42,6 @@ Luego pasamos ese modelo de máquina de Turing a un autómata para crear la tabl
 >
 > * La cinta por defecto está totalmente vacía (es decir, todas las celdas tienen un espacio).
 > * Todas las máquinas que se construyan comienzan en un espacio ('▲') y el contenido se encuentra a su derecha.
+
+> [!TIP]
+> Para consultar la documentación haga click ![AQUÍ](documentacion/Manual_de_usuario_Simulador_Turing_Kalevich_y_Parra.pdf)
