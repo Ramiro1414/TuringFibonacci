@@ -381,6 +381,31 @@ boton_cargar_maquina = tk.Button(frame_botones, text="Cargar máquina", command=
 boton_cargar_maquina.pack(pady=5)
 boton_cargar_maquina.pack_forget()
 
+# Crear un frame contenedor para la tabla con scroll
+frame_tabla_con_scroll = tk.Frame(ventana)
+frame_tabla_con_scroll.pack(fill=tk.BOTH, expand=True, pady=10)  # 'fill=tk.BOTH' hace que ocupe todo el espacio
+
+# Canvas para la tabla con altura fija (por ejemplo, 400px)
+canvas_tabla = tk.Canvas(frame_tabla_con_scroll, height=400)
+canvas_tabla.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)  # 'fill=tk.BOTH' hace que el canvas se expanda
+
+# Scrollbar vertical para el canvas
+scrollbar_tabla = tk.Scrollbar(frame_tabla_con_scroll, orient=tk.VERTICAL, command=canvas_tabla.yview)
+scrollbar_tabla.pack(side=tk.RIGHT, fill=tk.Y)  # Pegado al lado derecho
+
+# Configurar el canvas para que sea scrolleable
+canvas_tabla.configure(yscrollcommand=scrollbar_tabla.set)
+canvas_tabla.bind('<Configure>', lambda e: canvas_tabla.configure(scrollregion=canvas_tabla.bbox('all')))
+
+# Frame dentro del canvas para la tabla
+frame_tabla = tk.Frame(canvas_tabla)
+
+# Añadir el frame de la tabla al canvas
+canvas_tabla.create_window((0, 0), window=frame_tabla, anchor='nw')
+
+# Centramos la tabla dentro del canvas usando padx y expand
+frame_tabla.pack(side=tk.LEFT, padx=(canvas_tabla.winfo_width() // 4), expand=True)  # Usamos padx para centrar el frame de la tabla
+
 # Frame para la tabla
 frame_tabla = tk.Frame(ventana)
 frame_tabla.pack(pady=10)
