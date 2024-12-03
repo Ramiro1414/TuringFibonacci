@@ -6,6 +6,16 @@ Autores:
 * Alan Kalevich
 * Ramiro Parra
 
+## Implementación
+
+Lo primero que se hizo fue modelar la máquina de Turing que desarrolla en su cinta la sucesión de Fibonacci, donde los numeros estan expresados en binario y separados por '#'.
+
+![Maquina de Turing modelada en Excalidraw (herramienta de dibujo en línea colaborativa)](imagenes/maquina_fibonacci.png)
+
+Luego pasamos ese modelo de máquina de Turing a un autómata para crear la tabla de transición.
+
+![Autómata de la máquina de Turing que desarrolla la sucesión de Fibonacci](imagenes/automata_fibonacci.png)
+
 ## Instalación
 
 1. Clonar el repositorio
