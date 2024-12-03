@@ -142,7 +142,7 @@ def cargar_maquina():
     if archivo_seleccionado:
         try:
             # Ejecutar main.py con el archivo seleccionado, sin el argumento --cinta
-            subprocess.run(["python", "main.py", "--config", archivo_seleccionado])
+            subprocess.run(["python", "simulador.py", "--config", archivo_seleccionado])
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
     else:
@@ -312,7 +312,7 @@ def guardar_datos():
 
     # Invocar el main.py para cargar la máquina automáticamente, solo con el archivo de configuración
     try:
-        subprocess.run(["python", "main.py", "--config", nombre_archivo_config])
+        subprocess.run(["python", "simulador.py", "--config", nombre_archivo_config])
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
 
