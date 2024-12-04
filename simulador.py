@@ -14,9 +14,11 @@ def crear_control_zoom():
     control_zoom.pack(side=tk.TOP, pady=10)
     control_zoom.bind("<ButtonRelease-1>", lambda e: mt.cambiar_zoom(control_zoom.get(), canvas, frame_cinta))
 
+
 def limpiar_cinta():
     """Limpia la cinta y habilita el botón 'Iniciar'."""
     mt.limpiar_y_redibujar(canvas, frame_cinta, configuracion['estado_inicial'], botones_arr)
+
 
 def iniciar_maquina():
     """Inicia la máquina de Turing al presionar el botón 'Iniciar'."""
@@ -66,6 +68,7 @@ def cargar_cinta_original_simulador():
     cinta = cargar_cinta_original(args.config)
     mt.cinta = cinta
     mt.limpiar_y_redibujar_cinta_original(canvas, frame_cinta, configuracion['estado_inicial'], botones_arr)
+
 
 parser = argparse.ArgumentParser(description="Simulador de Máquina de Turing")
 parser.add_argument("--config", required=True, help="Archivo de configuración de la máquina de Turing")

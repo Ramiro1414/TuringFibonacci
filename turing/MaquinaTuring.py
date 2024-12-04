@@ -68,7 +68,6 @@ class MaquinaTuring:
             boton_limpiar.config(state=tk.NORMAL)
 
 
-
     def mostrar_error(self):
         """Muestra un diálogo de error si ocurre un problema con las transiciones."""
         mbox.showerror("Error", "La máquina de Turing ha encontrado un estado inválido o no tiene transición definida.")
@@ -105,7 +104,6 @@ class MaquinaTuring:
         print(''.join(cinta_con_cabeza))
 
 
-   
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
    
    
@@ -151,12 +149,12 @@ class MaquinaTuring:
         # Mantener la posición del scroll (código previo sigue siendo útil)
         self.mantener_scroll(canvas)
 
+
     def mantener_scroll(self, canvas):
         """Actualiza la región de desplazamiento solo cuando es necesario."""
         # Verificar si la posición de la cinta ha cambiado significativamente
         if self.posicion_cabeza % 10 == 0:  # Cada 10 pasos, actualiza el scroll
             canvas.config(scrollregion=canvas.bbox("all"))
-
 
 
     def limpiar_visualizacion(self):
@@ -188,6 +186,7 @@ class MaquinaTuring:
         botones_arr["rapido"].config(state=tk.NORMAL)
         botones_arr["medio"].config(state=tk.NORMAL)
         botones_arr["lento"].config(state=tk.NORMAL)
+        
         
     # Limpiar la visualización y habilitar los botones nuevamente
     def limpiar_y_redibujar_cinta_original(self, canvas, frame_cinta, estado_inicial, botones_arr):

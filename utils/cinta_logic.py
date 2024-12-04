@@ -71,7 +71,6 @@ def escribir_cinta_en_archivo(cinta, archivo_csv):
         archivo.writelines(lineas)
 
         
-        
 def get_color_simbolo(simbolo):
     """Devuelve el color de fondo según el símbolo basado en las reglas genéricas."""
     if 'a' <= simbolo <= 'z':  # Letras minúsculas

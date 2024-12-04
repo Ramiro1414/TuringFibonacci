@@ -43,6 +43,7 @@ def leer_archivo_transiciones(csv_filename: str):
 
     return configuracion, transiciones
 
+
 def leer_archivo_estados(csv_filename: str):
     """
     Lee un archivo .csv delimitado con ';' donde la primer columna tiene el nombre del estado y la segunda columna indica si el estado es aceptador o no.
@@ -63,6 +64,7 @@ def leer_archivo_estados(csv_filename: str):
             es_aceptador = int(fila[1])  # Segunda columna como valor (0 o 1)
             estados[estado] = es_aceptador  # Agrega el estado y si es aceptador al diccionario
     return estados
+
 
 def encontrar_estados_aceptadores(diccionario_estados: dict):
     estados_aceptadores = []

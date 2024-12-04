@@ -6,9 +6,11 @@ import subprocess
 global label_archivo
 zoom_factor = 1.5 
 
+
 # Función para ajustar el tamaño de la fuente
 def get_font(size):
     return ("Arial", int(size * zoom_factor), "normal")
+
 
 # Función para seleccionar un archivo
 def seleccionar_archivo():
@@ -27,6 +29,7 @@ def seleccionar_archivo():
         boton_crear.config(state="disabled")
         boton_olvidar_maquina.pack()
         boton_cargar_maquina.pack()
+
 
 # Función para copiar al portapapeles utilizando tkinter (sin pyperclip)
 def copiar_al_portapapeles():
@@ -110,7 +113,6 @@ def crear_maquina():
     canvas_tabla.configure(scrollregion=canvas_tabla.bbox("all"))
 
 
-
 def olvidar_maquina():
     archivo_seleccionado = None
     boton_olvidar_maquina.pack_forget()
@@ -118,6 +120,7 @@ def olvidar_maquina():
     boton_cargar_maquina.pack_forget()
     boton_crear.config(state="normal")
     boton_agregar_fila.config(state="disabled")
+
 
 # Función para crear campos adicionales
 def crear_campos_adicionales():
@@ -146,6 +149,7 @@ def crear_campos_adicionales():
     lbl_cinta.grid(row=4, column=0, padx=5, pady=5, sticky="e")
     entry_cinta = tk.Entry(frame_campos, width=30, font=get_font(10))
     entry_cinta.grid(row=4, column=1, padx=5, pady=5)
+
 
 # Función para agregar una fila editable
 def agregar_fila():
@@ -182,6 +186,7 @@ def validar_tabla(tabla):
                 return False
     return True  # Si todas las celdas tienen contenido, devuelve True
 
+
 def validar_celdas_intermedias(tabla):
     """
     Verifica que las celdas de las columnas intermedias de la tabla contengan exactamente un carácter.
@@ -199,6 +204,7 @@ def validar_celdas_intermedias(tabla):
                     return False
     return True  # Si todas las celdas intermedias tienen un carácter, devuelve True
 
+
 def validar_columna_movimiento(tabla):
     """
     Valida que las celdas de la cuarta columna contengan valores válidos ('R', 'L', 'N').
@@ -214,6 +220,7 @@ def validar_columna_movimiento(tabla):
             return False
     return True  # Todas las celdas de la cuarta columna son válidas
 
+
 def validar_estado_inicial(tabla, estado_inicial):
     """
     Verifica si el estado inicial se encuentra en la primera columna (estados de origen).
@@ -228,6 +235,7 @@ def validar_estado_inicial(tabla, estado_inicial):
                 return True  # Estado inicial encontrado
     return False  # Estado inicial no encontrado
 
+
 def validar_estado_aceptador_en_columna(tabla, estado_aceptador):
     """
     Verifica si el estado aceptador se encuentra en la quinta columna de la tabla.
@@ -241,6 +249,7 @@ def validar_estado_aceptador_en_columna(tabla, estado_aceptador):
             if estado_destino == estado_aceptador:
                 return True  # Estado aceptador encontrado en la quinta columna
     return False  # Estado aceptador no encontrado en la quinta columna
+
 
 def guardar_datos():
     respuesta = messagebox.askyesno(
@@ -358,7 +367,6 @@ def guardar_datos():
         subprocess.run(["python", "simulador.py", "--config", nombre_archivo_config])
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
-
 
 
 # Crear la ventana principal
