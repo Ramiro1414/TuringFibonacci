@@ -4,6 +4,11 @@ import os
 import subprocess
 
 global label_archivo
+zoom_factor = 1.5 
+
+# Función para ajustar el tamaño de la fuente
+def get_font(size):
+    return ("Arial", int(size * zoom_factor), "normal")
 
 # Función para seleccionar un archivo
 def seleccionar_archivo():
@@ -29,23 +34,24 @@ def copiar_al_portapapeles():
     ventana.clipboard_append("▲")  # Copiar el carácter ▲ al portapapeles
 
 
-# Función para restablecer la interfaz al estado inicial
-def volver_a_inicio():
-    respuesta = messagebox.askyesno(
-        "Confirmar acción",
-        "¿Estás seguro de que deseas volver al inicio? Esto eliminará los cambios actuales."
-    )
-    if not respuesta:  # Si el usuario selecciona "No"
-        return
+def volver_a_inicio(init: bool):
+    if not init:
+        respuesta = messagebox.askyesno(
+            "Confirmar acción",
+            "¿Estás seguro de que deseas volver al inicio? Esto eliminará los cambios actuales."
+        )
+        if not respuesta:  # Si el usuario selecciona "No"
+            return
 
     global tabla, filas, columnas
     # Eliminar todos los widgets en el frame de la tabla
     for widget in frame_tabla.winfo_children():
         widget.destroy()
+
     # Eliminar todos los widgets en el frame de los campos adicionales
     for widget in frame_campos.winfo_children():
         widget.destroy()
-    
+
     # Reiniciar las variables globales de la tabla
     tabla = []
     filas = 0
@@ -56,42 +62,53 @@ def volver_a_inicio():
     boton_crear.config(state="normal")
     boton_guardar.pack_forget()
     boton_agregar_fila.config(state="disabled")
+    boton_agregar_fila.pack_forget()
+    boton_copiar.pack_forget()
 
     # Ocultar el botón "Volver"
     boton_volver.pack_forget()
 
-# Modificar la función crear_maquina para mostrar el botón "Volver"
+    # Actualizar el área de scroll después de borrar la tabla
+    canvas_tabla.configure(scrollregion=canvas_tabla.bbox("all"))
+
+
 def crear_maquina():
     global tabla, filas, columnas
     filas, columnas = 1, 5  # Dimensiones iniciales
     tabla = []
 
     boton_archivo.config(state="disabled")
-    boton_volver.pack()  # Mostrar el botón "Volver"
-    boton_guardar.pack()
+    boton_volver.pack(pady=5)
+    boton_guardar.pack(pady=5)
+    boton_agregar_fila.pack(pady=5)
+    boton_copiar.pack(pady=5)
 
     # Crear encabezado no editable
     encabezados = ["Estado origen", "Leo de cinta", "Escribo en cinta", "Acción", "Estado destino"]
     for col, texto in enumerate(encabezados):
-        etiqueta = tk.Label(frame_tabla, text=texto, bg="lightgray", font=("Arial", 10, "bold"), borderwidth=1, relief="solid")
+        etiqueta = tk.Label(frame_tabla, text=texto, bg="lightgray", font=("Arial", int(12 * zoom_factor), "bold"), borderwidth=1, relief="solid")
         etiqueta.grid(row=0, column=col, padx=5, pady=5, sticky="nsew")
 
     # Crear una fila editable
     for i in range(filas):
         fila = []
         for j in range(columnas):
-            celda = tk.Entry(frame_tabla, width=15)
+            celda = tk.Entry(frame_tabla, width=25, font=get_font(10))
             celda.grid(row=i + 1, column=j, padx=5, pady=5)
             fila.append(celda)
         tabla.append(fila)
 
-    # Deshabilitar el botón de crear máquina
     boton_agregar_fila.config(state="normal")
     boton_crear.config(state="disabled")
     boton_guardar.config(state="normal")
 
     # Crear campos para los valores adicionales
     crear_campos_adicionales()
+
+    # Actualiza el área de scroll para que la tabla aparezca correctamente
+    frame_tabla.update_idletasks()
+    canvas_tabla.configure(scrollregion=canvas_tabla.bbox("all"))
+
 
 
 def olvidar_maquina():
@@ -100,34 +117,34 @@ def olvidar_maquina():
     label_archivo.config(text="No se ha seleccionado una maquina de turing")
     boton_cargar_maquina.pack_forget()
     boton_crear.config(state="normal")
-    boton_agregar_fila.config(state="normal")
+    boton_agregar_fila.config(state="disabled")
 
 # Función para crear campos adicionales
 def crear_campos_adicionales():
     global entry_estado_inicial, entry_estado_aceptador, entry_nombre_maquina, entry_cinta
 
     # Etiquetas y campos para "Estado inicial"
-    lbl_estado_inicial = tk.Label(frame_campos, text="Estado inicial:")
+    lbl_estado_inicial = tk.Label(frame_campos, text="Estado inicial:", font=get_font(10))
     lbl_estado_inicial.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    entry_estado_inicial = tk.Entry(frame_campos, width=20)
+    entry_estado_inicial = tk.Entry(frame_campos, width=20, font=get_font(10))
     entry_estado_inicial.grid(row=0, column=1, padx=5, pady=5)
 
     # Etiquetas y campos para "Estado aceptador"
-    lbl_estado_aceptador = tk.Label(frame_campos, text="Estado aceptador:")
+    lbl_estado_aceptador = tk.Label(frame_campos, text="Estado aceptador:", font=get_font(10))
     lbl_estado_aceptador.grid(row=2, column=0, padx=5, pady=5, sticky="e")
-    entry_estado_aceptador = tk.Entry(frame_campos, width=20)
+    entry_estado_aceptador = tk.Entry(frame_campos, width=20, font=get_font(10))
     entry_estado_aceptador.grid(row=2, column=1, padx=5, pady=5)
 
     # Etiquetas y campos para "Nombre de la maquina"
-    lbl_nombre_maquina = tk.Label(frame_campos, text="Nombre de la máquina:")
+    lbl_nombre_maquina = tk.Label(frame_campos, text="Nombre de la máquina:", font=get_font(10))
     lbl_nombre_maquina.grid(row=3, column=0, padx=5, pady=5, sticky="e")
-    entry_nombre_maquina = tk.Entry(frame_campos, width=20)
+    entry_nombre_maquina = tk.Entry(frame_campos, width=20, font=get_font(10))
     entry_nombre_maquina.grid(row=3, column=1, padx=5, pady=5)
 
     # Etiquetas y campos para "Cinta"
-    lbl_cinta = tk.Label(frame_campos, text="Contenido de la cinta:")
+    lbl_cinta = tk.Label(frame_campos, text="Contenido de la cinta:", font=get_font(10))
     lbl_cinta.grid(row=4, column=0, padx=5, pady=5, sticky="e")
-    entry_cinta = tk.Entry(frame_campos, width=20)
+    entry_cinta = tk.Entry(frame_campos, width=30, font=get_font(10))
     entry_cinta.grid(row=4, column=1, padx=5, pady=5)
 
 # Función para agregar una fila editable
@@ -135,7 +152,7 @@ def agregar_fila():
     global filas
     fila = []
     for j in range(columnas):
-        celda = tk.Entry(frame_tabla, width=15)
+        celda = tk.Entry(frame_tabla, width=25, font=get_font(10))
         celda.grid(row=filas + 1, column=j, padx=5, pady=5)
         fila.append(celda)
     tabla.append(fila)
@@ -152,8 +169,6 @@ def cargar_maquina():
     else:
         messagebox.showerror("Error", "No se ha seleccionado ningún archivo para cargar.")
 
-
-        
 
 def validar_tabla(tabla):
     """
@@ -352,16 +367,29 @@ ventana = tk.Tk()
 # Configuración de la ventana
 ventana.title("Simulador de Máquina de Turing") 
 
+# Establecer el tamaño de la ventana
+ancho_ventana = 1500
+alto_ventana = 900
+
 # Obtener dimensiones de la pantalla
 ancho_pantalla = ventana.winfo_screenwidth()
 alto_pantalla = ventana.winfo_screenheight()
 
-# Establecer el tamaño de la ventana al tamaño de la pantalla
-ventana.geometry(f"{ancho_pantalla}x{alto_pantalla}")
+# Calcular la posición de la ventana para centrarla en la pantalla
+x_pos = int((ancho_pantalla - ancho_ventana) / 2)
+y_pos = int((alto_pantalla - alto_ventana) / 4)
+
+# Establecer la geometría de la ventana (ancho x alto + posición x + posición y)
+ventana.geometry(f"{ancho_ventana}x{alto_ventana}+{x_pos}+{y_pos}")
+
+ventana.resizable(False, False)
+
+# Asociar Ctrl + R a la función agregar_fila
+ventana.bind('<Control-r>', lambda event: agregar_fila())
 
 # Crear un frame contenedor para toda la ventana (para hacerla desplazable)
 frame_contenedor = tk.Frame(ventana)
-frame_contenedor.pack(fill=tk.BOTH, expand=True)  # Esto hace que el frame ocupe todo el espacio disponible
+frame_contenedor.pack(fill=tk.BOTH, expand=True)
 
 # Crear un canvas dentro del frame contenedor
 canvas = tk.Canvas(frame_contenedor)
@@ -376,32 +404,49 @@ canvas.configure(yscrollcommand=scrollbar.set)
 
 # Crear un frame dentro del canvas para todo el contenido
 frame_principal = tk.Frame(canvas)
-canvas.create_window((0, 0), window=frame_principal, anchor="nw")
+canvas.create_window((0, 0), window=frame_principal, anchor="n")  # 'n' para alinearlo arriba y centrar
 
-# Actualizar la región de desplazamiento cuando el contenido cambie de tamaño
-frame_principal.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
+def actualizar_scrollregion(event):
+    canvas.configure(scrollregion=canvas.bbox('all'))
+
+frame_principal.bind("<Configure>", actualizar_scrollregion)
 
 # Crear un frame contenedor para organizar los botones verticalmente
 frame_botones = tk.Frame(frame_principal)
-frame_botones.pack(pady=10, anchor='n')  # Aseguramos que los botones estén alineados al centro en la parte superior
+frame_botones.pack(pady=10, anchor='center')  # Aseguramos que los botones estén alineados al centro
 
 # Botón para seleccionar un archivo
-boton_archivo = tk.Button(frame_botones, text="Seleccionar máquina", command=seleccionar_archivo)
-boton_archivo.pack(pady=5)
+boton_archivo = tk.Button(frame_botones, text="Seleccionar máquina", command=seleccionar_archivo, font=get_font(12))
+boton_archivo.pack(pady=(30,5))
 
 # Label para mostrar el nombre del archivo seleccionado
-label_archivo = tk.Label(frame_botones, text="No se ha seleccionado una maquina de turing")
+label_archivo = tk.Label(frame_botones, text="No se ha seleccionado una maquina de turing", font=get_font(10))
 label_archivo.pack(pady=5)
 
 # Botón para olvidar una máquina
-boton_olvidar_maquina = tk.Button(frame_botones, text="Olvidar máquina", command=olvidar_maquina, bg="red", fg="white")
+boton_olvidar_maquina = tk.Button(frame_botones, text="Olvidar máquina", command=olvidar_maquina, bg="red", fg="white", font=get_font(12))
 boton_olvidar_maquina.pack(pady=5)
 boton_olvidar_maquina.pack_forget()
 
 # Botón para cargar una máquina
-boton_cargar_maquina = tk.Button(frame_botones, text="Cargar máquina", command=cargar_maquina, bg="lime green", fg="white")
+boton_cargar_maquina = tk.Button(frame_botones, text="Cargar máquina", command=cargar_maquina, bg="lime green", fg="white", font=get_font(12))
 boton_cargar_maquina.pack(pady=5)
 boton_cargar_maquina.pack_forget()
+
+# Botón para crear la tabla
+boton_crear = tk.Button(frame_botones, text="Crear máquina", command=crear_maquina, font=get_font(12))
+boton_crear.pack(pady=5)
+
+# Botón para agregar filas
+boton_agregar_fila = tk.Button(frame_botones, text="Agregar fila (Ctrl + R)", command=agregar_fila, font=get_font(12))
+boton_agregar_fila.pack(pady=5)
+boton_agregar_fila.config(state="disabled")
+boton_agregar_fila.pack_forget()
+
+# Crear un botón que copie el carácter '▲' al portapapeles
+boton_copiar = tk.Button(frame_botones, text="Copiar ▲ (espacio) al portapapeles", command=copiar_al_portapapeles, font=get_font(12))
+boton_copiar.pack(pady=5)
+boton_copiar.pack_forget()
 
 # Crear un frame contenedor para la tabla con scroll
 frame_tabla_con_scroll = tk.Frame(frame_principal)
@@ -415,7 +460,7 @@ canvas_tabla.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 frame_tabla = tk.Frame(canvas_tabla)
 
 # Añadir el frame de la tabla al canvas
-canvas_tabla.create_window((0, 0), window=frame_tabla, anchor='nw')
+canvas_tabla.create_window((0, 0), window=frame_tabla, anchor='n')  # Centramos la tabla en el canvas
 
 # Centramos la tabla dentro del canvas usando padx y expand
 frame_tabla.pack(side=tk.LEFT, padx=5, expand=True)
@@ -424,30 +469,17 @@ frame_tabla.pack(side=tk.LEFT, padx=5, expand=True)
 frame_campos = tk.Frame(frame_principal)
 frame_campos.pack(pady=10, anchor='n')
 
-# Botón para crear la tabla
-boton_crear = tk.Button(frame_botones, text="Crear máquina", command=crear_maquina)
-boton_crear.pack(pady=5)
-
-# Botón para agregar filas
-boton_agregar_fila = tk.Button(frame_botones, text="Agregar fila", command=agregar_fila)
-boton_agregar_fila.pack(pady=5)
-boton_agregar_fila.config(state="disabled")
-
-# Crear un botón que copie el carácter '▲' al portapapeles
-boton_copiar = tk.Button(frame_botones, text="Copiar ▲ (espacio) al portapapeles", command=copiar_al_portapapeles)
-boton_copiar.pack(pady=5)
-
 # Frame separado para otros botones (Guardar y Volver)
 frame_botones_inferior = tk.Frame(frame_principal)
 frame_botones_inferior.pack(pady=10, anchor='n')
 
 # Botón "Guardar"
-boton_guardar = tk.Button(frame_botones_inferior, text="Guardar y cargar maquina", command=guardar_datos, bg="green", fg="white", font=("Arial", 12, "bold"))
+boton_guardar = tk.Button(frame_botones_inferior, text="Guardar y cargar maquina", command=guardar_datos, bg="green", fg="white", font=get_font(12))
 boton_guardar.pack(side=tk.LEFT, pady=10)
 boton_guardar.pack_forget()
 
 # Crear el botón "Volver" (se mostrará al crear la tabla)
-boton_volver = tk.Button(frame_botones_inferior, text="Volver al inicio", command=volver_a_inicio, bg="orange", fg="black")
+boton_volver = tk.Button(frame_botones_inferior, text="Volver al inicio", command=lambda: volver_a_inicio(init = False), bg="orange", fg="black", font=get_font(12))
 boton_volver.pack(side=tk.LEFT, pady=10)
 boton_volver.pack_forget()
 
@@ -455,6 +487,9 @@ boton_volver.pack_forget()
 tabla = []
 filas = 0
 columnas = 0
+
+crear_maquina()
+volver_a_inicio(init=True)
 
 # Bucle principal de la aplicación
 ventana.mainloop()
