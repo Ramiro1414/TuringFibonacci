@@ -38,7 +38,6 @@ class MaquinaTuring:
 
     def iniciar(self, canvas, frame_cinta, velocidad: int, boton_iniciar, boton_limpiar):
         """Ejecuta el autómata paso a paso utilizando Tkinter y actualiza la visualización."""
-        #print(self.cinta)
         self.actualizar_visualizacion(canvas, frame_cinta)  # Actualización final
         simbolo_actual = self.cinta[self.posicion_cabeza]
 

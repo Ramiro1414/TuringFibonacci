@@ -345,12 +345,12 @@ def guardar_datos():
         messagebox.showerror("Error", f"No se pudo cargar la máquina: {e}")
 
 
+
 # Crear la ventana principal
 ventana = tk.Tk()
 
 # Configuración de la ventana
 ventana.title("Simulador de Máquina de Turing") 
-
 
 # Obtener dimensiones de la pantalla
 ancho_pantalla = ventana.winfo_screenwidth()
@@ -359,9 +359,31 @@ alto_pantalla = ventana.winfo_screenheight()
 # Establecer el tamaño de la ventana al tamaño de la pantalla
 ventana.geometry(f"{ancho_pantalla}x{alto_pantalla}")
 
+# Crear un frame contenedor para toda la ventana (para hacerla desplazable)
+frame_contenedor = tk.Frame(ventana)
+frame_contenedor.pack(fill=tk.BOTH, expand=True)  # Esto hace que el frame ocupe todo el espacio disponible
+
+# Crear un canvas dentro del frame contenedor
+canvas = tk.Canvas(frame_contenedor)
+canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# Crear un scrollbar para el canvas
+scrollbar = tk.Scrollbar(frame_contenedor, orient=tk.VERTICAL, command=canvas.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+# Configurar el canvas para que sea desplazable
+canvas.configure(yscrollcommand=scrollbar.set)
+
+# Crear un frame dentro del canvas para todo el contenido
+frame_principal = tk.Frame(canvas)
+canvas.create_window((0, 0), window=frame_principal, anchor="nw")
+
+# Actualizar la región de desplazamiento cuando el contenido cambie de tamaño
+frame_principal.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
+
 # Crear un frame contenedor para organizar los botones verticalmente
-frame_botones = tk.Frame(ventana)
-frame_botones.pack(pady=10)
+frame_botones = tk.Frame(frame_principal)
+frame_botones.pack(pady=10, anchor='n')  # Aseguramos que los botones estén alineados al centro en la parte superior
 
 # Botón para seleccionar un archivo
 boton_archivo = tk.Button(frame_botones, text="Seleccionar máquina", command=seleccionar_archivo)
@@ -382,20 +404,12 @@ boton_cargar_maquina.pack(pady=5)
 boton_cargar_maquina.pack_forget()
 
 # Crear un frame contenedor para la tabla con scroll
-frame_tabla_con_scroll = tk.Frame(ventana)
-frame_tabla_con_scroll.pack(fill=tk.BOTH, expand=True, pady=10)  # 'fill=tk.BOTH' hace que ocupe todo el espacio
+frame_tabla_con_scroll = tk.Frame(frame_principal)
+frame_tabla_con_scroll.pack(fill=tk.BOTH, expand=True, pady=10, padx=10, anchor='n')
 
-# Canvas para la tabla con altura fija (por ejemplo, 400px)
-canvas_tabla = tk.Canvas(frame_tabla_con_scroll, height=400)
-canvas_tabla.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)  # 'fill=tk.BOTH' hace que el canvas se expanda
-
-# Scrollbar vertical para el canvas
-scrollbar_tabla = tk.Scrollbar(frame_tabla_con_scroll, orient=tk.VERTICAL, command=canvas_tabla.yview)
-scrollbar_tabla.pack(side=tk.RIGHT, fill=tk.Y)  # Pegado al lado derecho
-
-# Configurar el canvas para que sea scrolleable
-canvas_tabla.configure(yscrollcommand=scrollbar_tabla.set)
-canvas_tabla.bind('<Configure>', lambda e: canvas_tabla.configure(scrollregion=canvas_tabla.bbox('all')))
+# Canvas para la tabla
+canvas_tabla = tk.Canvas(frame_tabla_con_scroll)
+canvas_tabla.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Frame dentro del canvas para la tabla
 frame_tabla = tk.Frame(canvas_tabla)
@@ -404,15 +418,11 @@ frame_tabla = tk.Frame(canvas_tabla)
 canvas_tabla.create_window((0, 0), window=frame_tabla, anchor='nw')
 
 # Centramos la tabla dentro del canvas usando padx y expand
-frame_tabla.pack(side=tk.LEFT, padx=(canvas_tabla.winfo_width() // 4), expand=True)  # Usamos padx para centrar el frame de la tabla
-
-# Frame para la tabla
-frame_tabla = tk.Frame(ventana)
-frame_tabla.pack(pady=10)
+frame_tabla.pack(side=tk.LEFT, padx=5, expand=True)
 
 # Frame para los campos adicionales
-frame_campos = tk.Frame(ventana)
-frame_campos.pack(pady=10)
+frame_campos = tk.Frame(frame_principal)
+frame_campos.pack(pady=10, anchor='n')
 
 # Botón para crear la tabla
 boton_crear = tk.Button(frame_botones, text="Crear máquina", command=crear_maquina)
@@ -428,8 +438,8 @@ boton_copiar = tk.Button(frame_botones, text="Copiar ▲ (espacio) al portapapel
 boton_copiar.pack(pady=5)
 
 # Frame separado para otros botones (Guardar y Volver)
-frame_botones_inferior = tk.Frame(ventana)
-frame_botones_inferior.pack(pady=10)
+frame_botones_inferior = tk.Frame(frame_principal)
+frame_botones_inferior.pack(pady=10, anchor='n')
 
 # Botón "Guardar"
 boton_guardar = tk.Button(frame_botones_inferior, text="Guardar y cargar maquina", command=guardar_datos, bg="green", fg="white", font=("Arial", 12, "bold"))
