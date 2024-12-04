@@ -35,7 +35,7 @@ Luego pasamos ese modelo de máquina de Turing a un autómata para crear la tabl
 `pip install -r requirements.txt`
 
 6. Ejecutar el programa.
-`python3 menu_turing.py`
+`python3 main.py`
 
 > [!IMPORTANT]
 > Utilizamos algunas convenciones para la implementación de este simulador:
